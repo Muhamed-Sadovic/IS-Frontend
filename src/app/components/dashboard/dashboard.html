@@ -1,1 +1,78 @@
-<p>dashboard works!</p>
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1>Dobrodošli, {{ ime }}!</h1>
+      <p class="text-muted">
+        Vaš nivo pristupa: <strong>{{ uloga }}</strong>
+      </p>
+    </div>
+    <hr>
+  </div>
+
+  <div class="row g-4">
+    @if (uloga === 'Pacijent') {
+    <div class="col-md-4">
+      <div class="card h-100 border-primary shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-calendar-plus fs-1 text-primary"></i>
+          <h5 class="card-title mt-3">Zakaži termin</h5>
+          <p class="card-text">Odaberite slobodan termin kod vašeg stomatologa.</p>
+          <button class="btn btn-primary w-100" routerLink="/zakazi">Kreni</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-info shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-file-earmark-medical fs-1 text-info"></i>
+          <h5 class="card-title mt-3">Moji pregledi</h5>
+          <p class="card-text">Pogledajte istoriju vaših poseta i recepte.</p>
+          <button class="btn btn-info text-white w-100">Otvori karton</button>
+        </div>
+      </div>
+    </div>
+    } @else if (uloga === 'Stomatolog') {
+    <div class="col-md-4">
+      <div class="card h-100 border-success shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-people fs-1 text-success"></i>
+          <h5 class="card-title mt-3">Lista pacijenata</h5>
+          <p class="card-text">Pregledajte bazu svih registrovanih pacijenata.</p>
+          <button class="btn btn-success w-100">Vidi pacijente</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-warning shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-clock-history fs-1 text-warning"></i>
+          <h5 class="card-title mt-3">Današnji raspored</h5>
+          <p class="card-text">Pogledajte ko je zakazan za danas.</p>
+          <button class="btn btn-warning w-100">Otvori kalendar</button>
+        </div>
+      </div>
+    </div>
+    } @else if (uloga === 'Admin') {
+    <div class="col-md-4">
+      <div class="card h-100 border-dark shadow-sm bg-light">
+        <div class="card-body text-center">
+          <i class="bi bi-box-seam fs-1 text-dark"></i>
+          <h5 class="card-title mt-3">Upravljanje inventarom</h5>
+          <p class="card-text">Dodajte materijal, lekove i pratite zalihe.</p>
+          <button class="btn btn-dark w-100">Inventar</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-danger shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-person-gear fs-1 text-danger"></i>
+          <h5 class="card-title mt-3">Upravljanje korisnicima</h5>
+          <p class="card-text">Dodajte nove stomatologe ili menjajte uloge.</p>
+          <button class="btn btn-danger w-100">Podešavanja</button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

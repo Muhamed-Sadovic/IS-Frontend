@@ -28,8 +28,6 @@ export class Login {
         // 1. Sačuvajmo token ili ID korisnika u memoriju browsera (da znamo ko je ulogovan)
         localStorage.setItem('korisnikId', res.id); 
         localStorage.setItem('uloga', res.uloga);
-
-        alert('Dobrodošli nazad!');
         
         // 2. Prebaci korisnika na Dashboard (napravićemo ga u sledećem koraku)
         this.router.navigate(['/dashboard']); 

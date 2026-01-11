@@ -14,8 +14,7 @@ export class Header {
   }
 
   logout() {
-    localStorage.removeItem('korisnikId');
-    localStorage.removeItem('uloga');
+    localStorage.clear();
     window.location.href = '/login';
   }
 }

@@ -1,0 +1,66 @@
+<div class="container mt-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white py-3">
+      <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i>Upravljanje Korisnicima</h4>
+    </div>
+    <div class="card-body">
+      @if (ucitavanje) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Učitavanje podataka...</p>
+      </div>
+      } @else {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Ime i Prezime</th>
+              <th>Email</th>
+              <th>Uloga</th>
+              <th class="text-end">Akcije</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of korisnici; track user.id) {
+            <tr>
+              <td>
+                <span class="text-muted">#{{ user.id }}</span>
+              </td>
+              <td>
+                <strong>{{ user.ime }} {{ user.prezime }}</strong>
+              </td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span
+                  class="badge rounded-pill"
+                  [ngClass]="{
+                    'bg-danger': user.uloga === 'Admin',
+                    'bg-success': user.uloga === 'Stomatolog',
+                    'bg-info text-dark': user.uloga === 'Pacijent'
+                  }"
+                >
+                  {{ user.uloga }}
+                </span>
+              </td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-outline-primary me-2">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="obrisiKorisnika(user.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="5" class="text-center py-4">Nema pronađenih korisnika.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+  </div>
+</div>

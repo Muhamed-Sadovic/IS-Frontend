@@ -1,0 +1,13 @@
+.card {
+  transition: transform 0.2s ease-in-out;
+  cursor: default;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.bi {
+  display: block;
+  margin-bottom: 10px;
+}

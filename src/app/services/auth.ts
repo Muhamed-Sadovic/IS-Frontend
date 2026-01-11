@@ -18,4 +18,8 @@ export class AuthService {
   register(podaci: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, podaci);
   }
+
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/svi-korisnici`);
+  }
 }

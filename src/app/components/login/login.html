@@ -1,0 +1,29 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h4 class="mb-0">Prijava na Sistem</h4>
+        </div>
+        <div class="card-body p-4">
+          <form (ngSubmit)="prijaviSe()">
+            <div class="mb-3">
+              <label class="form-label">Email adresa</label>
+              <input type="email" name="email" class="form-control" [(ngModel)]="korisnik.email" required placeholder="Unesite vaš email">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Lozinka</label>
+              <input type="password" name="lozinka" class="form-control" [(ngModel)]="korisnik.lozinka" required placeholder="Unesite lozinku">
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">Prijavi se</button>
+            
+            <div class="text-center mt-3">
+              <span>Niste registrovani? <a routerLink="/register" class="text-decoration-none text-primary fw-bold">Registrujte se</a></span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

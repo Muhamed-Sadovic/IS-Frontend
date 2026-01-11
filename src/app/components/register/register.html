@@ -1,0 +1,41 @@
+<div class="register-container">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        <div class="card shadow-lg border-0 mt-5">
+          <div class="card-header bg-success text-white text-center py-3">
+            <h3 class="mb-0">Kreiraj Nalog</h3>
+          </div>
+          <div class="card-body p-4">
+            <form (ngSubmit)="potvrdiRegistraciju()">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Ime</label>
+                  <input type="text" name="ime" class="form-control" [(ngModel)]="noviKorisnik.ime" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Prezime</label>
+                  <input type="text" name="prezime" class="form-control" [(ngModel)]="noviKorisnik.prezime" required>
+                </div>
+              </div>
+  
+              <div class="mb-3">
+                <label class="form-label">Email adresa</label>
+                <input type="email" name="email" class="form-control" [(ngModel)]="noviKorisnik.email" required>
+              </div>
+  
+              <div class="mb-3">
+                <label class="form-label">Lozinka</label>
+                <input type="password" name="lozinka" class="form-control" [(ngModel)]="noviKorisnik.lozinka" required>
+              </div>
+  
+              <button type="submit" class="btn btn-success w-100 py-2 shadow-sm">Registruj se</button>
+              
+              <div class="mt-3 text-center">
+                <p>Već imate nalog? <a routerLink="/login" class="text-success fw-bold">Prijavite se</a></p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

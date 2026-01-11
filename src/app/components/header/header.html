@@ -1,0 +1,25 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+  <div class="container">
+    <a class="navbar-brand fw-bold" routerLink="/home">
+      <i class="bi bi-plus-circle-fill me-2"></i>DentalCentar
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home">Početna</a>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn()">
+          <a class="nav-link" routerLink="/login">Prijava</a>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn()">
+          <a class="nav-link btn btn-light text-primary ms-lg-2" routerLink="/register"
+            >Registracija</a
+          >
+        </li>
+        <li class="nav-item" *ngIf="isLoggedIn()">
+          <a class="nav-link" style="cursor: pointer" (click)="logout()">Odjavi se</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

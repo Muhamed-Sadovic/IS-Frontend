@@ -1,0 +1,13 @@
+/* Podešavanje visine slidera */
+.carousel-item img {
+  height: 500px; /* Ovde smanji broj (npr. na 300px ili 350px) dok ti ne bude taman */
+  object-fit: cover; /* JAKO BITNO: Sprečava da se slike izobliče/razvuku */
+  width: 100%; /* Slika uvek ide punom širinom */
+}
+
+/* Opciono: Ako želiš da slider bude još niži na mobilnim telefonima */
+@media (max-width: 768px) {
+  .carousel-item img {
+    height: 250px;
+  }
+}

@@ -1,0 +1,26 @@
+.navbar-brand {
+    letter-spacing: 0.2px;
+  }
+  
+  .nav-link {
+    opacity: 0.95;
+  }
+  .nav-link.active {
+    font-weight: 700;
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+  }
+  
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.2);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 12px;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  

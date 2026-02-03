@@ -1,13 +1,100 @@
-/* Podešavanje visine slidera */
-.carousel-item img {
-  height: 500px; /* Ovde smanji broj (npr. na 300px ili 350px) dok ti ne bude taman */
-  object-fit: cover; /* JAKO BITNO: Sprečava da se slike izobliče/razvuku */
-  width: 100%; /* Slika uvek ide punom širinom */
+.hero {
+  position: relative;
+  padding: 80px 0;
+
+  background-image: url('/assets/slike/st1.webp');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  overflow: hidden;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(13, 110, 253, 0.85), rgba(13, 110, 253, 0.35));
+  z-index: 0;
+}
+.hero .container {
+  position: relative;
+  z-index: 1;
 }
 
-/* Opciono: Ako želiš da slider bude još niži na mobilnim telefonima */
-@media (max-width: 768px) {
-  .carousel-item img {
-    height: 250px;
-  }
+.hero-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hf-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 14px;
+}
+.hf-item i {
+  font-size: 16px;
+}
+
+.hero-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.hero-img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+.hero-card-body {
+  padding: 16px;
+}
+
+.icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(13, 110, 253, 0.12);
+  color: #0d6efd;
+  margin: 0 auto;
+  font-size: 24px;
+}
+
+.service-card {
+  border-radius: 18px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.service-card:hover {
+  transform: translateY(-3px);
+}
+
+.step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+}
+.step + .step {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #0d6efd;
+  color: #fff;
+  font-weight: 700;
+  flex: 0 0 32px;
+}
+
+.cta {
+  background: #fff;
 }

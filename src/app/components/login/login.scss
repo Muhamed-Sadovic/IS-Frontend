@@ -1,17 +1,28 @@
-body {
-    background: #f4f7f6; // Svijetlo siva/zelenkasta pozadina
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  .card {
-    border-radius: 15px; // Zaobljene ivice
-  }
-  
-  .form-control {
-    border-radius: 8px;
-    padding: 10px;
-    &:focus {
-      box-shadow: 0 0 0 0.25 mil rem rgba(25, 135, 84, 0.25); // Zeleni sjaj fokusa
-      border-color: red;
-    }
-  }
+.login-page {
+  background: linear-gradient(135deg, #f4f7f6, #e9f0ee);
+}
+.login-card {
+  border-radius: 18px;
+}
+.logo {
+  font-size: 42px;
+}
+.form-control {
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.input-group-text {
+  border-radius: 10px 0 0 10px;
+}
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+.btn-primary {
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(13, 110, 253, 0.25);
+}

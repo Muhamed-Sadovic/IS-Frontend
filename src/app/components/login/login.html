@@ -1,27 +1,120 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-4">
-      <div class="card shadow-lg border-0">
-        <div class="card-header bg-primary text-white text-center py-3">
-          <h4 class="mb-0">Prijava na Sistem</h4>
+<div class="login-page">
+  <div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100 g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="card login-card shadow-lg border-0">
+          <!-- HEADER -->
+          <div class="card-header text-center border-0 bg-white pt-4">
+            <h4 class="fw-bold mb-1">Prijava na sistem</h4>
+            <p class="text-muted small mb-0">DentalCentar – pristup vašem nalogu</p>
+          </div>
+
+          <!-- BODY -->
+          <div class="card-body px-4 py-4">
+            <form (ngSubmit)="prijaviSe()">
+              <!-- EMAIL -->
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">Email adresa</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">
+                    <i class="bi bi-envelope"></i>
+                  </span>
+                  <input
+                    type="email"
+                    name="email"
+                    class="form-control"
+                    [(ngModel)]="korisnik.email"
+                    required
+                    placeholder="ime@primer.com"
+                  />
+                </div>
+              </div>
+
+              <!-- PASSWORD -->
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">Lozinka</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">
+                    <i class="bi bi-lock"></i>
+                  </span>
+                  <input
+                    type="password"
+                    name="lozinka"
+                    class="form-control"
+                    [(ngModel)]="korisnik.lozinka"
+                    required
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="rememberMe" />
+                  <label class="form-check-label small text-muted" for="rememberMe">
+                    Zapamti me
+                  </label>
+                </div>
+
+                <a routerLink="/forgot-password" class="small text-primary text-decoration-none">
+                  Zaboravljena lozinka?
+                </a>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
+                Prijavi se
+              </button>
+              <div class="text-center mt-4 small">
+                <span class="text-muted">Nemate nalog?</span>
+                <a
+                  routerLink="/register"
+                  class="text-primary fw-semibold text-decoration-none ms-1"
+                >
+                  Registrujte se
+                </a>
+              </div>
+            </form>
+          </div>
         </div>
-        <div class="card-body p-4">
-          <form (ngSubmit)="prijaviSe()">
-            <div class="mb-3">
-              <label class="form-label">Email adresa</label>
-              <input type="email" name="email" class="form-control" [(ngModel)]="korisnik.email" required placeholder="Unesite vaš email">
+
+        <div class="text-center mt-3 small text-muted">© {{ currentYear }} DentalCentar</div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+          <h5 class="fw-bold mb-2">Brže i lakše</h5>
+          <p class="text-muted mb-4">
+            Zakazivanje termina, terapije i računi — sve na jednom mestu.
+          </p>
+
+          <div class="d-flex gap-3 mb-3">
+            <i class="bi bi-calendar2-check text-primary fs-4"></i>
+            <div>
+              <div class="fw-semibold">Zakazivanje termina</div>
+              <div class="small text-muted">Izaberite termin u par klikova.</div>
             </div>
-            <div class="mb-3">
-              <label class="form-label">Lozinka</label>
-              <input type="password" name="lozinka" class="form-control" [(ngModel)]="korisnik.lozinka" required placeholder="Unesite lozinku">
+          </div>
+
+          <div class="d-flex gap-3 mb-3">
+            <i class="bi bi-bell text-primary fs-4"></i>
+            <div>
+              <div class="fw-semibold">Podsetnici</div>
+              <div class="small text-muted">Ne propuštate pregled.</div>
             </div>
-            
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">Prijavi se</button>
-            
-            <div class="text-center mt-3">
-              <span>Niste registrovani? <a routerLink="/register" class="text-decoration-none text-primary fw-bold">Registrujte se</a></span>
+          </div>
+
+          <div class="d-flex gap-3">
+            <i class="bi bi-receipt text-primary fs-4"></i>
+            <div>
+              <div class="fw-semibold">Računi i evidencija</div>
+              <div class="small text-muted">Sve uredno sačuvano u sistemu.</div>
             </div>
-          </form>
+          </div>
+
+          <hr class="my-4" />
+
+          <div class="small text-muted">
+            <i class="bi bi-shield-lock me-1"></i>
+            Vaši podaci su sigurni i dostupni samo vama i stomatologu.
+          </div>
         </div>
       </div>
     </div>

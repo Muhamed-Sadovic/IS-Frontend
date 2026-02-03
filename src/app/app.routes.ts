@@ -4,6 +4,7 @@ import { Register } from './components/register/register';
 import { Dashboard } from './components/dashboard/dashboard';
 import { Home } from './components/home/home';
 import { UserTable } from './components/user-table/user-table';
+import { ProfileComponent } from './components/profile/profile';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -12,4 +13,5 @@ export const routes: Routes = [
   { path: 'home', component: Home },
   { path: 'user-table', component: UserTable },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'profile', component: ProfileComponent }
 ];

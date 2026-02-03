@@ -1,0 +1,25 @@
+.footer {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+.footer h5,
+.footer h6 {
+  color: #ffffff;
+}
+.footer p,
+.footer small {
+  color: rgba(255, 255, 255, 0.75);
+}
+.footer-link {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer-link:hover {
+  color: #0d6efd;
+  text-decoration: underline;
+}
+.footer-bottom {
+  background-color: #0b1220;
+  color: rgba(255, 255, 255, 0.65);
+}

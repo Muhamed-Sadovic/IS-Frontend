@@ -1,39 +1,51 @@
 <footer class="footer mt-5">
   <div class="container py-5">
     <div class="row gy-4">
-      <div class="col-md-4 text-center text-md-start">
-        <h5 class="fw-bold mb-2">
-          <i class="bi bi-plus-circle-fill me-2"></i>
+      
+      <div class="col-lg-4 col-md-6 text-center text-md-start">
+        <h5 class="fw-bold mb-3 d-flex align-items-center justify-content-center justify-content-md-start">
+          <i class="bi bi-plus-circle-fill me-2 text-primary"></i>
           DentalCentar
         </h5>
-        <p class="small mb-0">
-          Savremena stomatološka ordinacija posvećena vašem zdravlju i osmehu.
+        <p class="small text-white-50">
+          Savremena stomatološka ordinacija u Novom Pazaru. Vaš osmeh je naša najveća briga i motivacija. Sve informacije o terminima i računima na jednom mestu.
         </p>
+        <div class="d-flex justify-content-center justify-content-md-start gap-2 mt-3">
+          <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
+        </div>
       </div>
-      <div class="col-md-4 text-center">
-        <h6 class="fw-semibold mb-3">Brzi linkovi</h6>
-        <ul class="list-unstyled small">
-          <li class="mb-2">
-            <a routerLink="/home" class="footer-link">Početna</a>
-          </li>
-          <li class="mb-2">
-            <a routerLink="/appointments" class="footer-link">Zakazivanje</a>
-          </li>
-          <li class="mb-2">
-            <a routerLink="/login" class="footer-link">Prijava</a>
-          </li>
+
+      <div class="col-lg-4 col-md-6 text-center">
+        <h6 class="fw-bold text-white mb-3 text-uppercase small tracking-wider">Radno vreme</h6>
+        <ul class="list-unstyled small text-white-50">
+          <li class="mb-2">Pon - Pet: <span class="text-white fw-semibold">09:00 - 17:00</span></li>
+          <li class="mb-2">Subota: <span class="text-white fw-semibold">09:00 - 13:00</span></li>
+          <li>Nedelja: <span class="text-danger fw-bold">Zatvoreno</span></li>
         </ul>
       </div>
-      <div class="col-md-4 text-center text-md-end">
-        <h6 class="fw-semibold mb-3">Kontakt</h6>
-        <p class="small mb-1"><i class="bi bi-geo-alt me-1"></i> Novi Pazar, Srbija</p>
-        <p class="small mb-1"><i class="bi bi-telephone me-1"></i> +381 60 123 123</p>
-        <p class="small mb-0"><i class="bi bi-envelope me-1"></i> medmedorl121@gmail.com</p>
+
+      <div class="col-lg-4 col-md-12 text-center text-md-end">
+        <h6 class="fw-bold text-white mb-3 text-uppercase small tracking-wider">Kontakt info</h6>
+        <div class="small mb-2 text-white-50">
+          <i class="bi bi-geo-alt text-primary me-2"></i>Novi Pazar, Srbija
+        </div>
+        <div class="small mb-2 text-white-50">
+          <i class="bi bi-telephone text-primary me-2"></i>+381 60 123 123
+        </div>
+        <div class="small text-white-50">
+          <i class="bi bi-envelope text-primary me-2"></i>info&#64;dentalcentar.rs
+        </div>
       </div>
+
     </div>
   </div>
 
-  <div class="footer-bottom text-center py-3">
-    <small> © {{ currentYear }} DentalCentar. Sva prava zadržana. </small>
+  <div class="footer-bottom py-3">
+    <div class="container text-center">
+      <small class="text-white-50"> 
+        © {{ currentYear }} <span class="text-white fw-semibold">DentalCentar</span>. Sva prava zadržana. 
+      </small>
+    </div>
   </div>
 </footer>

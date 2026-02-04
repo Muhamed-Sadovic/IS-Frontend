@@ -24,12 +24,12 @@ export interface ChangePasswordRequest {
 @Injectable({ providedIn: 'root' })
 export class AccountService {
   // stavi tvoj backend url
-  private readonly baseUrl = 'http://localhost:5113/api/account';
+  private readonly baseUrl = '/api/account';
 
   constructor(private http: HttpClient) {}
 
   getMe(): Observable<MeResponse> {
-    return this.http.get<MeResponse>(`${this.baseUrl}/me`, { withCredentials: true });
+    return this.http.get<MeResponse>(`${this.baseUrl}/me`);
   }
 
   updateMe(dto: UpdateMeRequest): Observable<void> {

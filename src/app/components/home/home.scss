@@ -14,6 +14,7 @@
   inset: 0;
   background: linear-gradient(90deg, rgba(13, 110, 253, 0.85), rgba(13, 110, 253, 0.35));
   z-index: 0;
+  backdrop-filter: blur(2px);
 }
 .hero .container {
   position: relative;
@@ -44,6 +45,7 @@
   background: #fff;
   border-radius: 18px;
   overflow: hidden;
+  animation: float 6s ease-in-out infinite;
 }
 .hero-img {
   width: 100%;
@@ -69,6 +71,15 @@
 .service-card {
   border-radius: 18px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+    .icon-wrap {
+      background: #0d6efd;
+      color: #fff;
+      transition: 0.3s;
+    }
+  }
 }
 .service-card:hover {
   transform: translateY(-3px);
@@ -94,7 +105,30 @@
   font-weight: 700;
   flex: 0 0 32px;
 }
-
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
 .cta {
-  background: #fff;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid rgba(13, 110, 253, 0.1);
+}
+.rounded-circle {
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+.rounded-circle:hover {
+  transform: scale(1.15);
+  z-index: 5;
+}
+.text-warning i {
+  margin-right: 2px;
+  text-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
 }

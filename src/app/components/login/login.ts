@@ -4,17 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth'; // Putanja do tvog auth.ts
 import { Router, RouterLink } from '@angular/router';
 
-
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './login.html'
+  templateUrl: './login.html',
 })
 export class Login {
   korisnik = {
     email: '',
-    lozinka: ''
+    lozinka: '',
   };
   currentYear = new Date().getFullYear();
 
@@ -22,22 +21,15 @@ export class Login {
 
   prijaviSe() {
     console.log('Pokušaj prijave:', this.korisnik);
-    
+
     this.authService.login(this.korisnik).subscribe({
       next: (res) => {
-        console.log('Uspešan login! Odgovor sa servera:', res);
-        
-        // 1. Sačuvajmo token ili ID korisnika u memoriju browsera (da znamo ko je ulogovan)
-        localStorage.setItem('korisnikId', res.id); 
-        localStorage.setItem('uloga', res.uloga);
-        
-        // 2. Prebaci korisnika na Dashboard (napravićemo ga u sledećem koraku)
-        this.router.navigate(['/dashboard']); 
+        this.router.navigate(['/profile']);
       },
       error: (err) => {
-        console.error('Greška pri prijavi:', err);
-        alert('Neispravni podaci ili nalog ne postoji!');
-      }
+        console.error(err);
+        alert('Neispravan email ili lozinka.');
+      },
     });
   }
 }

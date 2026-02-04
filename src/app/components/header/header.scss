@@ -1,26 +1,72 @@
-.navbar-brand {
-    letter-spacing: 0.2px;
+.navbar {
+  backdrop-filter: blur(10px); // Blagi blur efekat pozadine
+  background-color: rgba(13, 110, 253, 0.95) !important; // Malo providna primarna boja
+}
+
+.brand-text {
+  letter-spacing: 0.5px;
+  font-size: 1.25rem;
+}
+
+.custom-link {
+  position: relative;
+  transition: all 0.3s ease;
+  padding: 0.5rem 0.8rem !important;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 5px;
+    left: 50%;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
   }
-  
-  .nav-link {
-    opacity: 0.95;
+
+  &:hover::after,
+  &.active::after {
+    width: 70%;
   }
-  .nav-link.active {
-    font-weight: 700;
+
+  &.active {
     opacity: 1;
-    text-decoration: underline;
-    text-underline-offset: 6px;
+    font-weight: 600;
   }
-  
-  .avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.2);
-    display: grid;
-    place-items: center;
-    font-weight: 700;
-    font-size: 12px;
-    border: 1px solid rgba(255,255,255,0.25);
+}
+
+.user-pill {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px 4px 6px !important;
+  border-radius: 50px;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
-  
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--bs-primary);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 11px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+// Dropdown stilovi
+.dropdown-item {
+  font-size: 0.9rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #f8f9fa;
+    padding-left: 1.25rem;
+  }
+}

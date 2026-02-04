@@ -1,7 +1,56 @@
-.card {
-  border-radius: 18px;
+.container {
+  max-width: 1000px;
 }
+
+.card {
+  transition: transform 0.2s ease-in-out;
+  background: #ffffff;
+}
+
 .form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
   border-color: #0d6efd;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.input-group-text {
+  color: #6c757d;
+}
+
+.badge {
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.form-text {
+  font-size: 0.8rem;
+}
+
+// Opcionalno: Efekat "lebdenja" za kartice
+.card:hover {
+  transform: translateY(-5px);
+}
+.modal.fade .modal-dialog {
+  transform: scale(0.8);
+  transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+  transform: scale(1);
+}
+
+.bi-check-circle-fill {
+  display: inline-block;
+  animation: pulseCheck 0.5s ease-in-out;
+}
+
+@keyframes pulseCheck {
+  0% {
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

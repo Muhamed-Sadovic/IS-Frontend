@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { AccountService, MeResponse } from '../../services/account';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, NgIf],
+  imports: [CommonModule, FormsModule],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],
 })
@@ -26,31 +27,28 @@ export class ProfileComponent implements OnInit {
   passSuccess = '';
   passError = '';
 
-  constructor(private account: AccountService) {}
+  constructor(private account: AccountService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    console.log('PROFILE: ngOnInit radi');
     this.loadMe();
   }
 
   loadMe() {
-    console.log('PROFILE: loadMe pozvan');
     this.loading = true;
     this.account.getMe().subscribe({
       next: (data) => {
-        
-        console.log('PROFILE: me stigao', data);
         this.me = data;
-        this.profileForm = {
-          ime: data.ime ?? '',
-          prezime: data.prezime ?? '',
-        };
+
+        this.profileForm.ime = data.ime ?? '';
+        this.profileForm.prezime = data.prezime ?? '';
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
+        console.error('PROFILE: greska', err);
         this.loading = false;
-        console.log('PROFILE: greska', err);
-        this.profileError = 'Ne mogu da učitam profil. Proveri da li si prijavljen.';
+        this.profileError = 'Ne mogu da učitam profil.';
+        this.cdr.detectChanges();
       },
     });
   }
@@ -65,6 +63,14 @@ export class ProfileComponent implements OnInit {
     this.profileError = '';
   }
 
+  showSuccessModal() {
+    const modalElem = document.getElementById('successModal');
+    if (modalElem) {
+      const modal = new bootstrap.Modal(modalElem);
+      modal.show();
+    }
+  }
+
   saveProfile() {
     this.savingProfile = true;
     this.profileSuccess = '';
@@ -73,12 +79,14 @@ export class ProfileComponent implements OnInit {
     this.account.updateMe(this.profileForm).subscribe({
       next: () => {
         this.savingProfile = false;
-        this.profileSuccess = 'Podaci su sačuvani.';
+        this.showSuccessModal();
         this.loadMe();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.savingProfile = false;
         this.profileError = err?.error ?? 'Greška pri čuvanju.';
+        this.cdr.detectChanges();
       },
     });
   }
@@ -97,12 +105,14 @@ export class ProfileComponent implements OnInit {
     this.account.changePassword(this.passForm).subscribe({
       next: () => {
         this.savingPass = false;
-        this.passSuccess = 'Lozinka je promenjena.';
+        this.showSuccessModal();
         this.passForm = { staraLozinka: '', novaLozinka: '', potvrdaNove: '' };
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.savingPass = false;
         this.passError = err?.error ?? 'Greška pri promeni lozinke.';
+        this.cdr.detectChanges();
       },
     });
   }

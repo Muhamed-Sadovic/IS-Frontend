@@ -1,13 +1,101 @@
+// dashboard.scss
+
+// 1. Stilizacija glavnih kartica
 .card {
-  transition: transform 0.2s ease-in-out;
-  cursor: default;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
   &:hover {
     transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
   }
 }
 
-.bi {
-  display: block;
-  margin-bottom: 10px;
+.bg-primary {
+  background: linear-gradient(45deg, #0d6efd, #0043a8) !important;
+}
+.bg-success {
+  background: linear-gradient(45deg, #198754, #0f5132) !important;
+}
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  background: #f0f2f5;
+  color: #0d6efd;
+  font-weight: 700;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid #dee2e6;
+}
+.x-small { font-size: 11px; }
+// 3. Stilizacija tabova (Pills)
+.btn-group {
+  background: #f8f9fa;
+  padding: 5px;
+  border-radius: 50px;
+
+  .btn {
+    border: none;
+    border-radius: 50px !important;
+    padding: 8px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+
+    &.btn-light {
+      background: transparent;
+      color: #6c757d;
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+}
+
+// 4. Tabela "Glass" efekat i poliranje
+.table {
+  th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: #6c757d;
+    padding: 15px;
+  }
+
+  td {
+    padding: 15px;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background 0.2s;
+    &:hover {
+      background-color: rgba(13, 110, 253, 0.02);
+    }
+  }
+}
+
+// 5. Animacija za "Novi Stomatolog" dugme
+.btn-success {
+  box-shadow: 0 4px 14px 0 rgba(25, 135, 84, 0.39);
+  &:hover {
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.23);
+  }
+}
+
+// 6. Badges (Uloge)
+.badge {
+  padding: 6px 12px;
+  font-weight: 600;
+  &.bg-info {
+    background-color: rgba(13, 202, 240, 0.15) !important;
+    color: #087990;
+  }
+  &.bg-dark {
+    background-color: rgba(33, 37, 41, 0.1) !important;
+    color: #212529;
+  }
 }

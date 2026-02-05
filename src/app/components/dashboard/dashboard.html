@@ -1,78 +1,407 @@
-<div class="container mt-5">
-  <div class="row mb-4">
-    <div class="col-md-8">
-      <h1>Dobrodošli, {{ ime }}!</h1>
-      <p class="text-muted">
-        Vaš nivo pristupa: <strong>{{ uloga }}</strong>
-      </p>
+<div class="container py-5" *ngIf="data && data.uloga?.toLowerCase() === 'admin'">
+  <div class="row mb-4 align-items-center">
+    <div class="col-md-5">
+      <h2 class="fw-bold mb-0 text-dark">Admin Panel</h2>
+      <p class="text-muted small">Upravljanje sistemom, korisnicima i zalihama</p>
     </div>
-    <hr>
+    <div class="col-md-7 text-md-end mt-3 mt-md-0">
+      <div class="btn-group shadow-sm rounded-pill overflow-hidden border bg-white p-1">
+        <button
+          class="btn px-3"
+          [ngClass]="adminTab === 'stats' ? 'btn-primary' : 'btn-light'"
+          (click)="adminTab = 'stats'"
+        >
+          <i class="bi bi-graph-up me-1"></i> Statistika
+        </button>
+        <button
+          class="btn px-3"
+          [ngClass]="adminTab === 'users' ? 'btn-primary' : 'btn-light'"
+          (click)="loadUsers()"
+        >
+          <i class="bi bi-people me-1"></i> Korisnici
+        </button>
+        <button
+          class="btn px-3"
+          [ngClass]="adminTab === 'appointments' ? 'btn-primary' : 'btn-light'"
+          (click)="adminTab = 'appointments'"
+        >
+          <i class="bi bi-calendar-event me-1"></i> Termini
+        </button>
+        <button
+          class="btn px-3"
+          [ngClass]="adminTab === 'inventar' ? 'btn-primary' : 'btn-light'"
+          (click)="loadInventar()"
+        >
+          <i class="bi bi-box-seam me-1"></i> Inventar
+        </button>
+      </div>
+      <button class="btn btn-success rounded-pill ms-2 shadow-sm" (click)="openDocModal()">
+        <i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">Novi Stomatolog</span>
+      </button>
+    </div>
   </div>
 
-  <div class="row g-4">
-    @if (uloga === 'Pacijent') {
-    <div class="col-md-4">
-      <div class="card h-100 border-primary shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-calendar-plus fs-1 text-primary"></i>
-          <h5 class="card-title mt-3">Zakaži termin</h5>
-          <p class="card-text">Odaberite slobodan termin kod vašeg stomatologa.</p>
-          <button class="btn btn-primary w-100" routerLink="/zakazi">Kreni</button>
+  <hr class="mb-5 opacity-10" />
+
+  <div *ngIf="adminTab === 'stats'" class="animate__animated animate__fadeIn">
+    <div class="row g-4 mb-5">
+      <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white h-100">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="text-white-50 text-uppercase small">Ukupno Korisnika</h6>
+              <h2 class="fw-bold mb-0">{{ data.ukupnoPacijenata }}</h2>
+            </div>
+            <i class="bi bi-people fs-1 opacity-50"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-success text-white h-100">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="text-white-50 text-uppercase small">Svi Termini</h6>
+              <h2 class="fw-bold mb-0">{{ data.ukupnoTermina }}</h2>
+            </div>
+            <i class="bi bi-calendar-check fs-1 opacity-50"></i>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card h-100 border-info shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-file-earmark-medical fs-1 text-info"></i>
-          <h5 class="card-title mt-3">Moji pregledi</h5>
-          <p class="card-text">Pogledajte istoriju vaših poseta i recepte.</p>
-          <button class="btn btn-info text-white w-100">Otvori karton</button>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <div class="card-header bg-white py-3 border-0">
+        <h5 class="fw-bold mb-0 text-dark">
+          <i class="bi bi-box-seam me-2 text-primary"></i>Kritični Inventar
+        </h5>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th class="ps-4">Naziv</th>
+              <th class="text-center">Količina</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of data.inventar">
+              <td class="ps-4 fw-semibold">{{ item.naziv }}</td>
+              <td class="text-center">{{ item.kolicina }}</td>
+              <td><span class="badge bg-danger rounded-pill px-3">Potrebna nabavka</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="adminTab === 'users'" class="animate__animated animate__fadeIn">
+    <div class="row mb-4 g-3">
+      <div class="col-md-5 col-lg-4">
+        <div class="input-group shadow-sm rounded-pill overflow-hidden border">
+          <span class="input-group-text bg-white border-0 ps-3">
+            <i class="bi bi-search text-primary"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control border-0 ps-2 py-2"
+            placeholder="Pronađi korisnika..."
+            [(ngModel)]="searchTerm"
+            style="box-shadow: none"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-3 col-lg-2">
+        <select
+          class="form-select shadow-sm rounded-pill border py-2 px-3"
+          [(ngModel)]="roleFilter"
+          style="box-shadow: none; cursor: pointer"
+        >
+          <option value="Sve">Sve uloge</option>
+          <option value="Pacijent">Pacijenti</option>
+          <option value="Stomatolog">Stomatolozi</option>
+          <option value="Admin">Administratori</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light text-uppercase small fw-bold text-muted">
+            <tr>
+              <th class="ps-4">Ime i Prezime</th>
+              <th>Email</th>
+              <th>Uloga</th>
+              <th class="text-end pe-4">Akcije</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of filteredUsers">
+              <td class="ps-4">
+                <div class="d-flex align-items-center">
+                  <div class="avatar-circle me-3">{{ u.ime[0] }}{{ u.prezime[0] }}</div>
+                  <div>
+                    <div class="fw-bold text-dark">{{ u.ime }} {{ u.prezime }}</div>
+                    <div class="text-muted x-small">ID: #{{ u.id }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="small text-muted">{{ u.email }}</td>
+              <td>
+                <span
+                  class="badge rounded-pill"
+                  [ngClass]="u.uloga === 'Admin' ? 'bg-dark' : 'bg-info text-dark'"
+                >
+                  {{ u.uloga }}
+                </span>
+              </td>
+              <td class="text-end pe-4">
+                <button class="btn btn-sm btn-delete" (click)="deleteUser(u.id)">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredUsers?.length === 0">
+              <td colspan="4" class="text-center py-5 text-muted">Nema pronađenih korisnika.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="adminTab === 'appointments'" class="animate__animated animate__fadeIn">
+    <div class="row mb-4">
+      <div class="col-md-5 col-lg-4">
+        <div class="input-group shadow-sm rounded-pill overflow-hidden border">
+          <span class="input-group-text bg-white border-0 ps-3">
+            <i class="bi bi-filter text-success"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control border-0 ps-2 py-2"
+            placeholder="Pretraži termine..."
+            [(ngModel)]="appointmentSearch"
+            style="box-shadow: none"
+          />
         </div>
       </div>
     </div>
-    } @else if (uloga === 'Stomatolog') {
-    <div class="col-md-4">
-      <div class="card h-100 border-success shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-people fs-1 text-success"></i>
-          <h5 class="card-title mt-3">Lista pacijenata</h5>
-          <p class="card-text">Pregledajte bazu svih registrovanih pacijenata.</p>
-          <button class="btn btn-success w-100">Vidi pacijente</button>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light text-uppercase small fw-bold text-muted">
+            <tr>
+              <th class="ps-4">Datum i Vreme</th>
+              <th>Pacijent</th>
+              <th>Stomatolog</th>
+              <th>Status</th>
+              <th class="text-end pe-4">Akcija</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of filteredAppointments()">
+              <td class="ps-4">
+                <div class="fw-bold text-dark">{{ t.datumVreme | date : 'dd.MM.yyyy' }}</div>
+                <div class="text-primary small fw-semibold">
+                  {{ t.datumVreme | date : 'HH:mm' }}h
+                </div>
+              </td>
+              <td>{{ t.pacijentIme }}</td>
+              <td>Dr. {{ t.stomatologIme }}</td>
+              <td>
+                <span class="badge rounded-pill bg-primary-subtle text-primary">
+                  {{ t.status }}
+                </span>
+              </td>
+              <td class="text-end pe-4">
+                <button
+                  class="btn btn-sm btn-outline-danger border-0"
+                  (click)="deleteAppointment(t.id)"
+                >
+                  <i class="bi bi-x-circle text-danger"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredAppointments().length === 0">
+              <td colspan="5" class="text-center py-5 text-muted">
+                Nema zakazanih termina za prikazivanje.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="adminTab === 'inventar'" class="animate__animated animate__fadeIn">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-light">
+          <h5 class="fw-bold mb-3">Novi Materijal</h5>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Naziv</label>
+            <input
+              type="text"
+              class="form-control rounded-pill"
+              [(ngModel)]="noviMaterijal.naziv"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Količina</label>
+            <input
+              type="number"
+              class="form-control rounded-pill"
+              [(ngModel)]="noviMaterijal.kolicina"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Opis</label>
+            <textarea
+              class="form-control rounded-4"
+              [(ngModel)]="noviMaterijal.opis"
+              rows="2"
+            ></textarea>
+          </div>
+          <button class="btn btn-primary w-100 rounded-pill fw-bold" (click)="saveNoviMaterijal()">
+            <i class="bi bi-save me-2"></i>Dodaj u inventar
+          </button>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <div class="table-responsive">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+              <div
+                class="table-responsive table-scroll"
+                style="max-height: 407px; overflow-y: auto"
+              >
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="bg-light text-uppercase small fw-bold text-muted text-center">
+                    <tr>
+                      <th class="text-start ps-4">Materijal</th>
+                      <th>Količina</th>
+                      <th>Status</th>
+                      <th class="text-end pe-4">Korekcija</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of inventar">
+                      <td class="ps-4">
+                        <div class="fw-bold text-dark">{{ item.naziv }}</div>
+                        <div class="x-small text-muted">{{ item.opis || 'Nema opisa' }}</div>
+                      </td>
+                      <td class="text-center fw-bold fs-5">{{ item.kolicina }}</td>
+                      <td class="text-center">
+                        <span
+                          class="badge rounded-pill"
+                          [ngClass]="
+                            item.kolicina < 10
+                              ? 'bg-danger-subtle text-danger'
+                              : 'bg-success-subtle text-success'
+                          "
+                        >
+                          {{ item.kolicina < 10 ? 'Kritično' : 'U redu' }}
+                        </span>
+                      </td>
+                      <td class="text-end pe-4">
+                        <div class="btn-group btn-group-sm rounded-pill overflow-hidden border">
+                          <button class="btn btn-light" (click)="updateKolicina(item.id, -1)">
+                            -1
+                          </button>
+                          <button class="btn btn-light" (click)="updateKolicina(item.id, 1)">
+                            +1
+                          </button>
+                          <button
+                            class="btn btn-light bg-white"
+                            (click)="updateKolicina(item.id, 10)"
+                          >
+                            +10
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card h-100 border-warning shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-clock-history fs-1 text-warning"></i>
-          <h5 class="card-title mt-3">Današnji raspored</h5>
-          <p class="card-text">Pogledajte ko je zakazan za danas.</p>
-          <button class="btn btn-warning w-100">Otvori kalendar</button>
-        </div>
+  </div>
+</div>
+
+<div class="modal fade" id="docModal" #docModal tabindex="-1" aria-labelledby="docModalLabel">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-4">
+      <div class="modal-header bg-success text-white rounded-top-4">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-person-plus-fill me-2"></i>Novi Stomatolog
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body p-4">
+        <form #docForm="ngForm">
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Ime</label>
+            <input
+              type="text"
+              class="form-control rounded-pill"
+              name="ime"
+              [(ngModel)]="noviDoc.ime"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Prezime</label>
+            <input
+              type="text"
+              class="form-control rounded-pill"
+              name="prezime"
+              [(ngModel)]="noviDoc.prezime"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Email adresa</label>
+            <input
+              type="email"
+              class="form-control rounded-pill"
+              name="email"
+              [(ngModel)]="noviDoc.email"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Lozinka</label>
+            <input
+              type="password"
+              class="form-control rounded-pill"
+              name="lozinka"
+              [(ngModel)]="noviDoc.lozinka"
+              required
+            />
+          </div>
+          <button
+            type="button"
+            class="btn btn-success w-100 rounded-pill fw-bold py-2"
+            (click)="saveStomatolog()"
+          >
+            Sačuvaj Stomatologa
+          </button>
+        </form>
       </div>
     </div>
-    } @else if (uloga === 'Admin') {
-    <div class="col-md-4">
-      <div class="card h-100 border-dark shadow-sm bg-light">
-        <div class="card-body text-center">
-          <i class="bi bi-box-seam fs-1 text-dark"></i>
-          <h5 class="card-title mt-3">Upravljanje inventarom</h5>
-          <p class="card-text">Dodajte materijal, lekove i pratite zalihe.</p>
-          <button class="btn btn-dark w-100">Inventar</button>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card h-100 border-danger shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-person-gear fs-1 text-danger"></i>
-          <h5 class="card-title mt-3">Upravljanje korisnicima</h5>
-          <p class="card-text">Dodajte nove stomatologe ili menjajte uloge.</p>
-          <button class="btn btn-danger w-100">Podešavanja</button>
-        </div>
-      </div>
-    </div>
-    }
   </div>
 </div>

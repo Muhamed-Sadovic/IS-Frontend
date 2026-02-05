@@ -66,11 +66,13 @@
   color: #0d6efd;
   margin: 0 auto;
   font-size: 24px;
+  transition: all 0.3s ease;
 }
 
 .service-card {
   border-radius: 18px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
   &:hover {
     transform: translateY(-8px);
     box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
@@ -84,7 +86,10 @@
 .service-card:hover {
   transform: translateY(-3px);
 }
-
+.service-card:hover .icon-wrap {
+  background: #0d6efd !important;
+  color: #fff !important;
+}
 .step {
   display: flex;
   gap: 12px;
@@ -131,4 +136,43 @@
 .text-warning i {
   margin-right: 2px;
   text-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+}
+/* Dizajn tabele */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Zebra i Hover efekat */
+.cenovnik-row {
+  transition: background-color 0.2s ease;
+}
+
+.cenovnik-row:hover {
+  background-color: rgba(13, 110, 253, 0.03) !important;
+}
+
+/* Badge stil unutar tabele */
+.bg-primary-subtle {
+  background-color: rgba(13, 110, 253, 0.1) !important;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+/* Senka za karticu tabele */
+.card.shadow-sm {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Dugme unutar tabele */
+.btn-primary {
+  transition: transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+}
+
+.italic {
+  font-style: italic;
 }

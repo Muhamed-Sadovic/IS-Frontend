@@ -3,124 +3,155 @@
     <div class="row justify-content-center align-items-center min-vh-100 g-4">
       <div class="col-md-7 col-lg-5">
         <div class="card register-card shadow-lg border-0">
+          <ng-container *ngIf="!prikaziVerifikaciju">
+            <div class="card-header text-center border-0 bg-white pt-4">
+              <h4 class="fw-bold mb-1">Kreiranje naloga</h4>
+              <p class="text-muted small mb-0">DentalCentar – registracija pacijenta</p>
+            </div>
 
-          <!-- HEADER -->
-          <div class="card-header text-center border-0 bg-white pt-4">
-            <h4 class="fw-bold mb-1">Kreiranje naloga</h4>
-            <p class="text-muted small mb-0">
-              DentalCentar – registracija pacijenta
-            </p>
-          </div>
-
-          <!-- BODY -->
-          <div class="card-body px-4 py-4">
-            <form (ngSubmit)="potvrdiRegistraciju()">
-
-              <div class="row">
-                <!-- IME -->
-                <div class="col-md-6 mb-3">
-                  <label class="form-label small fw-semibold">Ime</label>
-                  <input
-                    type="text"
-                    name="ime"
-                    class="form-control"
-                    [(ngModel)]="noviKorisnik.ime"
-                    required
-                    placeholder="Unesite ime"
-                  />
+            <div class="card-body px-4 py-4">
+              <form (ngSubmit)="potvrdiRegistraciju()">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label small fw-semibold">Ime</label>
+                    <input
+                      type="text"
+                      name="ime"
+                      class="form-control"
+                      [(ngModel)]="noviKorisnik.ime"
+                      required
+                      placeholder="Unesite ime"
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label small fw-semibold">Prezime</label>
+                    <input
+                      type="text"
+                      name="prezime"
+                      class="form-control"
+                      [(ngModel)]="noviKorisnik.prezime"
+                      required
+                      placeholder="Unesite prezime"
+                    />
+                  </div>
                 </div>
 
-                <!-- PREZIME -->
-                <div class="col-md-6 mb-3">
-                  <label class="form-label small fw-semibold">Prezime</label>
-                  <input
-                    type="text"
-                    name="prezime"
-                    class="form-control"
-                    [(ngModel)]="noviKorisnik.prezime"
-                    required
-                    placeholder="Unesite prezime"
-                  />
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Email adresa</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                    <input
+                      type="email"
+                      name="email"
+                      class="form-control"
+                      [(ngModel)]="noviKorisnik.email"
+                      required
+                      placeholder="ime@primer.com"
+                    />
+                  </div>
                 </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Lozinka</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                    <input
+                      type="password"
+                      name="lozinka"
+                      class="form-control"
+                      [(ngModel)]="noviKorisnik.lozinka"
+                      required
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+
+                <div class="small text-muted mb-3">Lozinka treba da ima bar 6 karaktera.</div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
+                  Registruj se
+                </button>
+
+                <div class="text-center mt-4 small">
+                  <span class="text-muted">Već imate nalog?</span>
+                  <a routerLink="/login" class="text-primary fw-semibold text-decoration-none ms-1"
+                    >Prijavite se</a
+                  >
+                </div>
+              </form>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="prikaziVerifikaciju">
+            <div class="card-body px-4 py-5 text-center animate__animated animate__fadeIn">
+              <div class="mb-4">
+                <i class="bi bi-shield-check text-primary" style="font-size: 3rem"></i>
+              </div>
+              <h4 class="fw-bold mb-2">Potvrda identiteta</h4>
+              <p class="text-muted small mb-4">
+                Poslali smo četvorocifreni kod na adresu:<br />
+                <span class="text-dark fw-bold">{{ noviKorisnik.email }}</span>
+              </p>
+
+              <div class="d-flex justify-content-center gap-2 mb-4">
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="form-control otp-input"
+                  [(ngModel)]="otpCode[0]"
+                  (keyup)="moveFocus($event, 0)"
+                  name="otp0"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="form-control otp-input"
+                  [(ngModel)]="otpCode[1]"
+                  (keyup)="moveFocus($event, 1)"
+                  name="otp1"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="form-control otp-input"
+                  [(ngModel)]="otpCode[2]"
+                  (keyup)="moveFocus($event, 2)"
+                  name="otp2"
+                />
+                <input
+                  type="text"
+                  maxlength="1"
+                  class="form-control otp-input"
+                  [(ngModel)]="otpCode[3]"
+                  (keyup)="moveFocus($event, 3)"
+                  name="otp3"
+                />
               </div>
 
-              <!-- EMAIL -->
-              <div class="mb-3">
-                <label class="form-label small fw-semibold">Email adresa</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light">
-                    <i class="bi bi-envelope"></i>
-                  </span>
-                  <input
-                    type="email"
-                    name="email"
-                    class="form-control"
-                    [(ngModel)]="noviKorisnik.email"
-                    required
-                    placeholder="ime@primer.com"
-                  />
-                </div>
-              </div>
-
-              <!-- LOZINKA -->
-              <div class="mb-3">
-                <label class="form-label small fw-semibold">Lozinka</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light">
-                    <i class="bi bi-lock"></i>
-                  </span>
-                  <input
-                    type="password"
-                    name="lozinka"
-                    class="form-control"
-                    [(ngModel)]="noviKorisnik.lozinka"
-                    required
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
-
-              <div class="small text-muted mb-3">
-                Lozinka treba da ima bar 6 karaktera.
-              </div>
-            
-              <!-- BUTTON -->
-              <button
-                type="submit"
-                class="btn btn-primary w-100 py-2 fw-semibold mt-2"
-              >
-                Registruj se
+              <button (click)="potvrdiKod()" class="btn btn-primary w-100 py-2 fw-semibold mb-3">
+                Aktiviraj nalog
               </button>
 
-              <!-- FOOTER -->
-              <div class="text-center mt-4 small">
-                <span class="text-muted">Već imate nalog?</span>
-                <a
-                  routerLink="/login"
-                  class="text-primary fw-semibold text-decoration-none ms-1"
-                >
-                  Prijavite se
-                </a>
-              </div>
-
-            </form>
-          </div>
-
+              <button
+                (click)="prikaziVerifikaciju = false"
+                class="btn btn-link btn-sm text-decoration-none text-muted"
+              >
+                <i class="bi bi-arrow-left me-1"></i> Nazad na izmenu podataka
+              </button>
+            </div>
+          </ng-container>
         </div>
 
-        <!-- COPYRIGHT -->
-        <div class="text-center mt-3 small text-muted">
-          © {{ currentYear }} DentalCentar
-        </div>
-
+        <div class="text-center mt-3 small text-muted">© {{ currentYear }} DentalCentar</div>
       </div>
+
       <div class="col-lg-5 d-none d-lg-block">
         <div class="card border-0 shadow-sm rounded-4 p-4">
           <h5 class="fw-bold mb-2">Brže i lakše</h5>
           <p class="text-muted mb-4">
             Zakazivanje termina, terapije i računi — sve na jednom mestu.
           </p>
-    
+
           <div class="d-flex gap-3 mb-3">
             <i class="bi bi-calendar2-check text-primary fs-4"></i>
             <div>
@@ -128,7 +159,7 @@
               <div class="small text-muted">Izaberite termin u par klikova.</div>
             </div>
           </div>
-    
+
           <div class="d-flex gap-3 mb-3">
             <i class="bi bi-bell text-primary fs-4"></i>
             <div>
@@ -136,7 +167,7 @@
               <div class="small text-muted">Ne propuštate pregled.</div>
             </div>
           </div>
-    
+
           <div class="d-flex gap-3">
             <i class="bi bi-receipt text-primary fs-4"></i>
             <div>
@@ -144,9 +175,8 @@
               <div class="small text-muted">Sve uredno sačuvano u sistemu.</div>
             </div>
           </div>
-    
+
           <hr class="my-4" />
-    
           <div class="small text-muted">
             <i class="bi bi-shield-lock me-1"></i>
             Vaši podaci su sigurni i dostupni samo vama i stomatologu.

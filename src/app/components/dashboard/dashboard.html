@@ -97,9 +97,9 @@
   </div>
 
   <div *ngIf="adminTab === 'users'" class="animate__animated animate__fadeIn">
-    <div class="row mb-4 g-3">
+    <div class="row mb-4 g-3 align-items-center">
       <div class="col-md-5 col-lg-4">
-        <div class="input-group shadow-sm rounded-pill overflow-hidden border">
+        <div class="input-group shadow-sm rounded-pill overflow-hidden border bg-white">
           <span class="input-group-text bg-white border-0 ps-3">
             <i class="bi bi-search text-primary"></i>
           </span>
@@ -125,6 +125,12 @@
           <option value="Admin">Administratori</option>
         </select>
       </div>
+
+      <div class="col-md-4 col-lg-6 text-md-end">
+        <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+          Prikazano: <strong>{{ filteredUsers.length }}</strong> korisnika
+        </span>
+      </div>
     </div>
 
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
@@ -142,7 +148,9 @@
             <tr *ngFor="let u of filteredUsers">
               <td class="ps-4">
                 <div class="d-flex align-items-center">
-                  <div class="avatar-circle me-3">{{ u.ime[0] }}{{ u.prezime[0] }}</div>
+                  <div class="avatar-circle me-3" [ngClass]="getRoleClass(u.uloga)">
+                    {{ u.ime[0] }}{{ u.prezime[0] }}
+                  </div>
                   <div>
                     <div class="fw-bold text-dark">{{ u.ime }} {{ u.prezime }}</div>
                     <div class="text-muted x-small">ID: #{{ u.id }}</div>
@@ -151,10 +159,7 @@
               </td>
               <td class="small text-muted">{{ u.email }}</td>
               <td>
-                <span
-                  class="badge rounded-pill"
-                  [ngClass]="u.uloga === 'Admin' ? 'bg-dark' : 'bg-info text-dark'"
-                >
+                <span class="badge rounded-pill" [ngClass]="getRoleClass(u.uloga)">
                   {{ u.uloga }}
                 </span>
               </td>

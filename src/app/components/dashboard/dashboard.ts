@@ -34,6 +34,18 @@ export class Dashboard implements OnInit {
   inventar: any[] = [];
   noviMaterijal = { naziv: '', kolicina: 0, opis: '' };
 
+  getRoleClass(uloga: string): string {
+    switch (uloga.toLowerCase()) {
+      case 'admin':
+        return 'border-admin';
+      case 'stomatolog':
+        return 'border-doctor';
+      case 'pacijent':
+        return 'border-patient';
+      default:
+        return 'border-light';
+    }
+  }
   ngOnInit() {
     this.loadDashboardData();
   }
@@ -51,22 +63,21 @@ export class Dashboard implements OnInit {
   }
 
   get filteredUsers() {
-    let filtered = this.users;
+    if (!this.users) return [];
 
-    if (this.roleFilter !== 'Sve') {
-      filtered = filtered.filter((u) => u.uloga === this.roleFilter);
-    }
+    return this.users.filter((u) => {
+      // Uslov za tekst (ime, prezime ili email)
+      const matchesSearch =
+        !this.searchTerm ||
+        (u.ime + ' ' + u.prezime + ' ' + u.email)
+          .toLowerCase()
+          .includes(this.searchTerm.toLowerCase());
 
-    if (this.searchTerm) {
-      const s = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (u) =>
-          u.ime.toLowerCase().includes(s) ||
-          u.prezime.toLowerCase().includes(s) ||
-          u.email.toLowerCase().includes(s)
-      );
-    }
-    return filtered;
+      // Uslov za ulogu
+      const matchesRole = this.roleFilter === 'Sve' || u.uloga === this.roleFilter;
+
+      return matchesSearch && matchesRole;
+    });
   }
 
   loadDashboardData() {

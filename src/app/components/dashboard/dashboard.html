@@ -410,3 +410,39 @@
     </div>
   </div>
 </div>
+
+<div class="container py-5 border-0 shadow-lg rounded-4" *ngIf="data?.uloga === 'Pacijent'">
+  <div class="card-body p-4">
+    <h5 class="fw-bold mb-4">Zakažite termin</h5>
+
+    <div class="mb-3">
+      <label class="small fw-bold">Stomatolog</label>
+      <select class="form-select rounded-pill" [(ngModel)]="noviTermin.stomatologId">
+        <option [ngValue]="null" disabled>Izaberite doktora...</option>
+        <option *ngFor="let s of stomatolozi" [value]="s.id">Dr {{ s.ime }} {{ s.prezime }}</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="small fw-bold">Datum posete</label>
+      <input type="date" class="form-control rounded-pill" 
+             [(ngModel)]="izabranDatum" 
+             [min]="minDatum.split('T')[0]" 
+             [max]="maxDatum.split('T')[0]">
+    </div>
+
+    <div class="mb-4">
+      <label class="small fw-bold">Vreme (Radno vreme 09:00 - 17:00)</label>
+      <div class="d-flex flex-wrap gap-2">
+        <div *ngFor="let t of slobodniTermini">
+          <input type="radio" class="btn-check" name="vreme" [id]="t" [value]="t" [(ngModel)]="izabranoVreme">
+          <label class="btn btn-outline-primary btn-sm rounded-pill px-3" [for]="t">{{ t }}</label>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary w-100 rounded-pill fw-bold" (click)="zakazi()">
+      Potvrdi termin
+    </button>
+  </div>
+</div>

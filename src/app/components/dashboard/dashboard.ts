@@ -34,6 +34,85 @@ export class Dashboard implements OnInit {
   inventar: any[] = [];
   noviMaterijal = { naziv: '', kolicina: 0, opis: '' };
 
+  stomatolozi: any[] = [];
+  noviTermin = { stomatologId: null, datumVreme: '', napomena: '' };
+  minDatum: string = '';
+  maxDatum: string = '';
+  slobodniTermini: string[] = [];
+  izabranoVreme: string = ''; // Format "HH:mm"
+  izabranDatum: string = '';
+
+  generisiTermine() {
+    const termini = [];
+    for (let sat = 9; sat <= 16; sat++) {
+      termini.push(`${sat.toString().padStart(2, '0')}:00`);
+      if (sat < 17) {
+        // Ne dodajemo 17:00 jer je to kraj radnog vremena
+        termini.push(`${sat.toString().padStart(2, '0')}:30`);
+      }
+    }
+    // Uklanjamo 17:00 ako je upao u listu
+    this.slobodniTermini = termini.filter((t) => t !== '17:00');
+  }
+  pripremiDatumVreme() {
+    if (this.izabranDatum && this.izabranoVreme) {
+      this.noviTermin.datumVreme = `${this.izabranDatum}T${this.izabranoVreme}:00`;
+    }
+  }
+
+  postaviGraniceDatuma() {
+    const sad = new Date();
+    const zaSedamDana = new Date();
+    zaSedamDana.setDate(sad.getDate() + 7);
+
+    // Formatiranje u YYYY-MM-DDTHH:mm format koji input zahteva
+    this.minDatum = sad.toISOString().split('.')[0].slice(0, 16);
+    this.maxDatum = zaSedamDana.toISOString().split('.')[0].slice(0, 16);
+  }
+
+  proveriMinute() {
+    if (!this.noviTermin.datumVreme) return;
+
+    let datum = new Date(this.noviTermin.datumVreme);
+    let minuti = datum.getMinutes();
+    let sati = datum.getHours();
+
+    // Logika zaokruživanja minuta na 00 ili 30
+    if (minuti > 0 && minuti <= 15) {
+      datum.setMinutes(0);
+    } else if (minuti > 15 && minuti <= 45) {
+      datum.setMinutes(30);
+    } else if (minuti > 45) {
+      datum.setMinutes(0);
+      datum.setHours(sati + 1);
+    }
+
+    // Provera radnog vremena na frontu
+    if (datum.getHours() < 9 || datum.getHours() >= 17) {
+      alert('Molimo izaberite vreme između 09:00 i 16:30.');
+      this.noviTermin.datumVreme = '';
+      return;
+    }
+
+    // Ažuriraj model sa ispravljenim vremenom
+    this.noviTermin.datumVreme = this.formatirajDatumZaInput(datum);
+  }
+
+  formatirajDatumZaInput(date: Date): string {
+    const pad = (n: number) => (n < 10 ? '0' + n : n);
+    return (
+      date.getFullYear() +
+      '-' +
+      pad(date.getMonth() + 1) +
+      '-' +
+      pad(date.getDate()) +
+      'T' +
+      pad(date.getHours()) +
+      ':' +
+      pad(date.getMinutes())
+    );
+  }
+
   getRoleClass(uloga: string): string {
     switch (uloga.toLowerCase()) {
       case 'admin':
@@ -48,7 +127,35 @@ export class Dashboard implements OnInit {
   }
   ngOnInit() {
     this.loadDashboardData();
+    this.ucitajStomatologe();
+    this.postaviGraniceDatuma();
+    this.generisiTermine();
   }
+  ucitajStomatologe() {
+    this.http.get<any[]>('https://localhost:7075/api/user/stomatolozi').subscribe({
+      next: (res) => {
+        this.stomatolozi = res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Greška sa serverom:', err),
+    });
+  }
+  zakazi() {
+    this.pripremiDatumVreme(); // Prvo spojimo vrednosti
+
+    if (!this.noviTermin.stomatologId || !this.noviTermin.datumVreme) {
+      alert('Molimo izaberite doktora, datum i vreme.');
+      return;
+    }
+
+    this.http.post('https://localhost:7075/api/termin/zakazi', this.noviTermin).subscribe({
+      next: (res: any) => {
+        alert(res.poruka);
+      },
+      error: (err) => alert(err.error),
+    });
+  }
+
   get filteredAppointments() {
     if (!this.data?.listaSvihTermina) return [];
     if (!this.appointmentSearch) return this.data.listaSvihTermina;

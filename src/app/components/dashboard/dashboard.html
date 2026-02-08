@@ -209,7 +209,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let t of filteredAppointments()">
+            <tr *ngFor="let t of filteredAppointments">
               <td class="ps-4">
                 <div class="fw-bold text-dark">{{ t.datumVreme | date : 'dd.MM.yyyy' }}</div>
                 <div class="text-primary small fw-semibold">
@@ -219,20 +219,45 @@
               <td>{{ t.pacijentIme }}</td>
               <td>Dr. {{ t.stomatologIme }}</td>
               <td>
-                <span class="badge rounded-pill bg-primary-subtle text-primary">
+                <span
+                  class="badge rounded-pill"
+                  [ngClass]="{
+                    'bg-warning-subtle text-warning': t.status === 'NaCekanju',
+                    'bg-success-subtle text-success': t.status === 'Prihvacen',
+                    'bg-danger-subtle text-danger': t.status === 'Odbijen',
+                    'bg-secondary-subtle text-secondary': t.status === 'Zavrsen'
+                  }"
+                >
                   {{ t.status }}
                 </span>
               </td>
               <td class="text-end pe-4">
+                <div class="btn-group me-2" *ngIf="t.status === 'NaCekanju'">
+                  <button
+                    class="btn btn-sm btn-outline-success border-0"
+                    (click)="odgovoriNaTermin(t.id, 'Prihvacen')"
+                    title="Odobri"
+                  >
+                    <i class="bi bi-check-circle-fill"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-danger border-0"
+                    (click)="odgovoriNaTermin(t.id, 'Odbijen')"
+                    title="Odbij"
+                  >
+                    <i class="bi bi-x-circle-fill"></i>
+                  </button>
+                </div>
+
                 <button
-                  class="btn btn-sm btn-outline-danger border-0"
+                  class="btn btn-sm btn-outline-secondary border-0"
                   (click)="deleteAppointment(t.id)"
                 >
-                  <i class="bi bi-x-circle text-danger"></i>
+                  <i class="bi bi-trash3"></i>
                 </button>
               </td>
             </tr>
-            <tr *ngIf="filteredAppointments().length === 0">
+            <tr *ngIf="filteredAppointments.length === 0">
               <td colspan="5" class="text-center py-5 text-muted">
                 Nema zakazanih termina za prikazivanje.
               </td>
@@ -342,6 +367,75 @@
   </div>
 </div>
 
+<div class="container py-5" *ngIf="data?.uloga === 'Stomatolog'">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h2 class="fw-bold mb-0 text-dark">Portal za Stomatologe</h2>
+      <p class="text-muted small">Pregled zakazanih termina i unos medicinskih nalaza</p>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-header bg-white py-3 border-0">
+      <h5 class="fw-bold mb-0 text-dark">
+        <i class="bi bi-person-badge me-2 text-primary"></i>Današnji pacijenti
+      </h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light text-uppercase small fw-bold text-muted">
+          <tr>
+            <th class="ps-4">Vreme</th>
+            <th>Pacijent</th>
+            <th>Tretman</th>
+            <th>Status</th>
+            <th class="text-end pe-4">Akcija</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of doctorAppointments" class="animate__animated animate__fadeIn">
+            <td class="ps-4">
+              <div class="fw-bold text-dark">{{ t.datumVreme | date : 'HH:mm' }}h</div>
+              <div class="text-primary small fw-semibold">
+                {{ t.datumVreme | date : 'dd.MM.yyyy' }}
+              </div>
+            </td>
+            <td>
+              <div class="fw-bold">{{ t.pacijentIme }}</div>
+              <div class="text-muted extra-small">ID termina: #{{ t.id }}</div>
+            </td>
+            <td>
+              <span class="badge bg-info-subtle text-info fw-bold">
+                {{ t.tretman || 'Nije navedeno' }}
+              </span>
+            </td>
+            <td>
+              <span class="badge rounded-pill bg-success-subtle text-success">
+                {{ t.status }}
+              </span>
+            </td>
+            <td class="text-end pe-4">
+              <button
+                class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm"
+                (click)="openPregledModal(t)"
+              >
+                <i class="bi bi-clipboard-pulse me-1"></i> Obavi pregled
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="doctorAppointments.length === 0">
+            <td colspan="5" class="text-center py-5 text-muted">
+              <i class="bi bi-calendar-check d-block fs-1 mb-2 opacity-50"></i>
+              Trenutno nemate zakazanih pacijenata za prikaz.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="docModal" #docModal tabindex="-1" aria-labelledby="docModalLabel">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow rounded-4">
@@ -424,18 +518,38 @@
     </div>
 
     <div class="mb-3">
+      <label class="small fw-bold">Vrsta tretmana (Usluga)</label>
+      <select class="form-select rounded-pill" [(ngModel)]="noviTermin.uslugaId">
+        <option [ngValue]="null" disabled>Izaberite uslugu...</option>
+        <option *ngFor="let u of listaUsluga" [value]="u.id">
+          {{ u.naziv }} - {{ u.cena }} RSD
+        </option>
+      </select>
+    </div>
+
+    <div class="mb-3">
       <label class="small fw-bold">Datum posete</label>
-      <input type="date" class="form-control rounded-pill" 
-             [(ngModel)]="izabranDatum" 
-             [min]="minDatum.split('T')[0]" 
-             [max]="maxDatum.split('T')[0]">
+      <input
+        type="date"
+        class="form-control rounded-pill"
+        [(ngModel)]="izabranDatum"
+        [min]="minDatum.split('T')[0]"
+        [max]="maxDatum.split('T')[0]"
+      />
     </div>
 
     <div class="mb-4">
       <label class="small fw-bold">Vreme (Radno vreme 09:00 - 17:00)</label>
       <div class="d-flex flex-wrap gap-2">
         <div *ngFor="let t of slobodniTermini">
-          <input type="radio" class="btn-check" name="vreme" [id]="t" [value]="t" [(ngModel)]="izabranoVreme">
+          <input
+            type="radio"
+            class="btn-check"
+            name="vreme"
+            [id]="t"
+            [value]="t"
+            [(ngModel)]="izabranoVreme"
+          />
           <label class="btn btn-outline-primary btn-sm rounded-pill px-3" [for]="t">{{ t }}</label>
         </div>
       </div>
@@ -444,5 +558,195 @@
     <button class="btn btn-primary w-100 rounded-pill fw-bold" (click)="zakazi()">
       Potvrdi termin
     </button>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-12">
+      <h4 class="fw-bold mb-3 text-dark"><i class="bi bi-clock-history me-2"></i>Moji Termini</h4>
+
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light text-uppercase small fw-bold text-muted">
+              <tr>
+                <th class="ps-4">Datum</th>
+                <th>Vreme</th>
+                <th>Doktor</th>
+                <th>Usluga</th>
+                <th>Status</th>
+                <th>Plaćanje</th>
+                <th class="text-end pe-4">Akcija</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of myAppointments">
+                <td class="ps-4 fw-bold">{{ t.datumVreme | date : 'dd.MM.yyyy' }}</td>
+                <td class="text-primary fw-bold">{{ t.datumVreme | date : 'HH:mm' }}h</td>
+                <td>Dr {{ t.stomatologIme }}</td>
+                <td>
+                  {{ t.tretman }}
+                  <span class="text-muted small">({{ t.cena }} RSD)</span>
+                </td>
+                <td>
+                  <span
+                    class="badge rounded-pill"
+                    [ngClass]="{
+                      'bg-warning-subtle text-warning': t.status === 'NaCekanju',
+                      'bg-success-subtle text-success': t.status === 'Prihvacen',
+                      'bg-danger-subtle text-danger': t.status === 'Odbijen',
+                      'bg-secondary-subtle text-secondary': t.status === 'Zavrsen'
+                    }"
+                  >
+                    {{ t.status }}
+                  </span>
+                </td>
+
+                <td>
+                  <button
+                    *ngIf="t.status === 'Zavrsen' && !t.jePlacen"
+                    class="btn btn-sm btn-primary rounded-pill shadow-sm"
+                    (click)="platiRacun(t.id, t.cena)"
+                  >
+                    <i class="bi bi-credit-card me-1"></i> Plati
+                  </button>
+
+                  <span *ngIf="t.jePlacen" class="badge bg-success rounded-pill px-3">
+                    <i class="bi bi-check-lg me-1"></i> Plaćeno
+                  </span>
+
+                  <span *ngIf="t.status !== 'Zavrsen' && !t.jePlacen" class="text-muted small">
+                    -
+                  </span>
+                </td>
+                <td class="text-end pe-4">
+                  <button
+                    *ngIf="t.status === 'NaCekanju'"
+                    class="btn btn-sm btn-outline-danger border-0 rounded-pill"
+                    (click)="otkaziMojTermin(t.id)"
+                    title="Otkaži zahtev"
+                  >
+                    <i class="bi bi-x-circle me-1"></i>Otkaži
+                  </button>
+                  <span *ngIf="t.status !== 'NaCekanju'" class="text-muted small"> - </span>
+                </td>
+              </tr>
+
+              <tr *ngIf="myAppointments.length === 0">
+                <td colspan="7" class="text-center py-5 text-muted">Nemate zakazanih termina.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade shadow" id="pregledModal" #pregledModal tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">Unos rezultata pregleda</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="p-3 bg-light rounded-3 mb-4">
+          <div class="small text-muted text-uppercase fw-bold">Pacijent:</div>
+          <div class="fs-5 fw-bold text-primary">{{ selectedTermin?.pacijentIme }}</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold text-muted text-uppercase">Dijagnoza</label>
+          <textarea
+            class="form-control border-2 rounded-3"
+            rows="3"
+            [(ngModel)]="pregledData.dijagnoza"
+            placeholder="Upišite dijagnozu pacijenta..."
+          >
+          </textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-bold text-muted text-uppercase">Terapija i Savet</label>
+          <textarea
+            class="form-control border-2 rounded-3"
+            rows="3"
+            [(ngModel)]="pregledData.terapija"
+            placeholder="Upišite propisanu terapiju ili lekove..."
+          >
+          </textarea>
+        </div>
+      </div>
+
+      <hr class="my-4 opacity-10" />
+
+      <div class="bg-light p-3 rounded-4 mb-3">
+        <h6 class="fw-bold mb-3 small text-uppercase">
+          <i class="bi bi-box-seam me-2"></i>Utrošeni materijal
+        </h6>
+
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-7">
+            <label class="small text-muted">Materijal</label>
+            <select
+              class="form-select form-select-sm rounded-pill"
+              [(ngModel)]="izabranMaterijalId"
+            >
+              <option [ngValue]="null">Izaberi...</option>
+              <option *ngFor="let item of inventar" [value]="item.id">
+                {{ item.naziv }} (Na stanju: {{ item.kolicina }})
+              </option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label class="small text-muted">Kol.</label>
+            <input
+              type="number"
+              class="form-control form-control-sm rounded-pill"
+              [(ngModel)]="kolicinaZaPotrosnju"
+              min="1"
+            />
+          </div>
+          <div class="col-2">
+            <button class="btn btn-sm btn-primary w-100 rounded-pill" (click)="dodajUPotrosnju()">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="list-group list-group-flush rounded-3 overflow-hidden shadow-sm"
+          *ngIf="listaPotrosnje.length > 0"
+        >
+          <div
+            class="list-group-item d-flex justify-content-between align-items-center py-2"
+            *ngFor="let p of listaPotrosnje; let i = index"
+          >
+            <div>
+              <span class="fw-bold text-dark">{{ p.naziv }}</span>
+              <span class="text-muted small ms-2">x {{ p.kolicina }} kom</span>
+            </div>
+            <button class="btn btn-link text-danger p-0" (click)="obrisiIzPotrosnje(i)">
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+          </div>
+        </div>
+        <div *ngIf="listaPotrosnje.length === 0" class="text-center text-muted small py-2">
+          Još niste dodali materijal.
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+          Odustani
+        </button>
+        <button
+          type="button"
+          class="btn btn-success rounded-pill px-4 shadow-sm"
+          (click)="savePregled()"
+        >
+          <i class="bi bi-check-lg me-1"></i> Završi i sačuvaj
+        </button>
+      </div>
+    </div>
   </div>
 </div>

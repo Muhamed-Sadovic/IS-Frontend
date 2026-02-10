@@ -64,6 +64,8 @@ export class Dashboard implements OnInit {
   izabranMaterijalId: number | null = null;
   kolicinaZaPotrosnju: number = 1;
 
+  isProcessing = false;
+
   // =================================================================
   // LIFECYCLE HOOKS
   // =================================================================
@@ -470,17 +472,23 @@ export class Dashboard implements OnInit {
         return 'border-light';
     }
   }
-  
+
   platiRacun(terminId: number, iznos: number) {
-    if (confirm(`Da li želite da platite račun u iznosu od ${iznos} RSD?`)) {
-      // Gađamo novi endpoint u RacunController-u
-      this.http.post(`https://localhost:7075/api/racun/plati/${terminId}`, {}).subscribe({
-        next: () => {
-          alert('Uplata uspešna! Hvala vam.');
-          this.loadMyAppointments(); // Osveži listu da dugme pozeleni
-        },
-        error: (err) => alert('Greška pri plaćanju: ' + err.error),
-      });
+    if (confirm(`Da li želite da platite račun u iznosu od ${iznos} RSD karticom?`)) {
+      this.isProcessing = true;
+      setTimeout(() => {
+        this.http.post(`https://localhost:7075/api/racun/plati/${terminId}`, {}).subscribe({
+          next: () => {
+            this.isProcessing = false;
+            alert('Transakcija uspešna! Vaša uplata je proknjižena.');
+            this.loadMyAppointments();
+          },
+          error: (err) => {
+            this.isProcessing = false;
+            alert('Greška pri transakciji: ' + err.error);
+          },
+        });
+      }, 3000);
     }
   }
 }

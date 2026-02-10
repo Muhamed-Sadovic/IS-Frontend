@@ -1,51 +1,68 @@
 .register-page {
   background: linear-gradient(135deg, #f4f7f6, #e8f3ee);
 }
-
 .register-card {
   border-radius: 18px;
 }
-
 .logo {
   font-size: 42px;
 }
-
 .form-control {
   border-radius: 10px;
   padding: 10px 12px;
 }
-
 .input-group-text {
   border-radius: 10px 0 0 10px;
 }
-
 .form-control:focus {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
   border-color: #0d6efd;
 }
-
 .btn-success {
   border-radius: 12px;
   transition: all 0.2s ease;
 }
-
 .btn-success:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(25, 135, 84, 0.25);
 }
+/* --- OTP KOCKICE (POPRAVLJENO CENTRIRANJE) --- */
 .otp-input {
-  width: 50px;
-  height: 60px;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  border: 2px solid #dee2e6;
-  border-radius: 10px;
-  background-color: #f8f9fa;
+  width: 70px;
+  height: 80px;
+
+  /* OVO JE KLJUČNO ZA CENTRIRANJE */
+  padding: 0; /* Sklanja Bootstrap padding */
+  line-height: 80px; /* Mora biti isto kao height da bi broj bio u sredini vertikalno */
+  text-align: center; /* Centrira horizontalno */
+
+  font-size: 3rem; /* Krupan broj */
+  font-weight: 700;
+  color: #0d6efd;
+
+  background-color: #fff;
+  border: 2px solid #e9ecef;
+  border-radius: 16px;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  caret-color: transparent; /* Sakriva kursor da ne smeta */
 }
 
 .otp-input:focus {
   border-color: #0d6efd;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  background-color: #fff;
   outline: none;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(13, 110, 253, 0.15);
+}
+
+/* Prilagođavanje za manje ekrane */
+@media (max-width: 576px) {
+  .otp-input {
+    width: 50px;
+    height: 60px;
+    line-height: 60px; /* Mora pratiti visinu */
+    font-size: 2rem;
+  }
 }

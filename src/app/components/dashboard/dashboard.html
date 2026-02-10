@@ -85,11 +85,17 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of data.inventar">
-              <td class="ps-4 fw-semibold">{{ item.naziv }}</td>
-              <td class="text-center">{{ item.kolicina }}</td>
-              <td><span class="badge bg-danger rounded-pill px-3">Potrebna nabavka</span></td>
-            </tr>
+            <ng-container *ngFor="let item of data.inventar">
+              <tr *ngIf="item.kolicina < 20">
+                <td class="ps-4 fw-semibold">{{ item.naziv }}</td>
+
+                <td class="text-center fw-bold text-danger">{{ item.kolicina }}</td>
+
+                <td>
+                  <span class="badge bg-danger rounded-pill px-3">Potrebna nabavka</span>
+                </td>
+              </tr>
+            </ng-container>
           </tbody>
         </table>
       </div>
@@ -169,7 +175,7 @@
                 </button>
               </td>
             </tr>
-            <tr *ngIf="filteredUsers?.length === 0">
+            <tr *ngIf="filteredUsers.length === 0">
               <td colspan="4" class="text-center py-5 text-muted">Nema pronađenih korisnika.</td>
             </tr>
           </tbody>
@@ -329,14 +335,24 @@
                       <td class="text-center fw-bold fs-5">{{ item.kolicina }}</td>
                       <td class="text-center">
                         <span
-                          class="badge rounded-pill"
-                          [ngClass]="
-                            item.kolicina < 10
-                              ? 'bg-danger-subtle text-danger'
-                              : 'bg-success-subtle text-success'
-                          "
+                          *ngIf="item.kolicina < 10"
+                          class="badge bg-danger-subtle text-danger rounded-pill px-3"
                         >
-                          {{ item.kolicina < 10 ? 'Kritično' : 'U redu' }}
+                          Kritično
+                        </span>
+
+                        <span
+                          *ngIf="item.kolicina >= 10 && item.kolicina <= 20"
+                          class="badge bg-warning-subtle text-warning-emphasis rounded-pill px-3"
+                        >
+                          Pri kraju
+                        </span>
+
+                        <span
+                          *ngIf="item.kolicina > 20"
+                          class="badge bg-success-subtle text-success rounded-pill px-3"
+                        >
+                          U redu
                         </span>
                       </td>
                       <td class="text-end pe-4">
@@ -603,11 +619,23 @@
 
                 <td>
                   <button
-                    *ngIf="t.status === 'Zavrsen' && !t.jePlacen"
+                    *ngIf="t.status === 'Zavrsen' && !t.jePlacen && t.imaRacun"
                     class="btn btn-sm btn-primary rounded-pill shadow-sm"
                     (click)="platiRacun(t.id, t.cena)"
+                    [disabled]="isProcessing"
                   >
-                    <i class="bi bi-credit-card me-1"></i> Plati
+                    <span *ngIf="!isProcessing">
+                      <i class="bi bi-credit-card me-1"></i> Plati
+                    </span>
+
+                    <span *ngIf="isProcessing">
+                      <span
+                        class="spinner-border spinner-border-sm me-1"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      Obrada...
+                    </span>
                   </button>
 
                   <span *ngIf="t.jePlacen" class="badge bg-success rounded-pill px-3">

@@ -1,56 +1,63 @@
-.container {
-  max-width: 1000px;
+.profile-page {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', sans-serif;
 }
-
-.card {
-  transition: transform 0.2s ease-in-out;
-  background: #ffffff;
+.profile-header {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
 }
-
-.form-control:focus {
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-  border-color: #0d6efd;
+.profile-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.03) !important;
 }
-
-.input-group-text {
-  color: #6c757d;
-}
-
-.badge {
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-}
-
-.form-text {
-  font-size: 0.8rem;
-}
-
-// Opcionalno: Efekat "lebdenja" za kartice
-.card:hover {
+.profile-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
 }
-.modal.fade .modal-dialog {
-  transform: scale(0.8);
-  transition: transform 0.3s ease-out;
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.form-control {
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  border-color: #dee2e6;
+}
+.form-control:focus {
+  box-shadow: none;
+  border-color: #0d6efd;
+  background-color: #fff;
+}
+.input-group:focus-within {
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+  border-radius: 6px;
 }
 
-.modal.show .modal-dialog {
-  transform: scale(1);
+.form-control[disabled], .form-control[readonly] {
+  background-color: #e9ecef;
+  opacity: 1;
+}
+.form-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.3rem;
+}
+.btn {
+  transition: all 0.2s;
 }
 
-.bi-check-circle-fill {
-  display: inline-block;
-  animation: pulseCheck 0.5s ease-in-out;
+.btn:active {
+  transform: scale(0.98);
 }
 
-@keyframes pulseCheck {
-  0% {
-    transform: scale(0);
-  }
-  70% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
+.hover-shadow:hover {
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
 }

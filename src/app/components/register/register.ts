@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth';
@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
-export class Register {
+export class Register implements OnInit {
   noviKorisnik = {
     ime: '',
     prezime: '',
@@ -33,6 +33,17 @@ export class Register {
     private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
+  ngOnInit() {
+    const savedEmail = localStorage.getItem('pendingRegistrationEmail');
+
+    if (savedEmail) {
+      this.noviKorisnik.email = savedEmail;
+      this.prikaziVerifikaciju = true;
+
+      // Opciono: Obavesti korisnika
+      // Swal.fire('Nastavak registracije', 'Vratili smo vas na unos koda.', 'info');
+    }
+  }
 
   potvrdiRegistraciju() {
     if (
@@ -77,6 +88,7 @@ export class Register {
           timer: 2000,
           showConfirmButton: false,
         });
+        localStorage.setItem('pendingRegistrationEmail', this.noviKorisnik.email);
         this.prikaziVerifikaciju = true;
         this.cdr.detectChanges();
       },
@@ -143,6 +155,7 @@ export class Register {
           allowOutsideClick: false,
         }).then((result) => {
           if (result.isConfirmed) {
+            localStorage.removeItem('pendingRegistrationEmail');
             this.router.navigate(['/login']);
           }
         });
@@ -157,5 +170,11 @@ export class Register {
         this.otpCode = ['', '', '', ''];
       },
     });
+  }
+  nazadNaIzmenu() {
+    this.prikaziVerifikaciju = false;
+    // Brišemo iz memorije jer korisnik svesno hoće da menja podatke
+    // (Ili ne brišemo, zavisi šta želiš, ali bolje da ostane u formi)
+    // localStorage.removeItem('pendingRegistrationEmail');
   }
 }

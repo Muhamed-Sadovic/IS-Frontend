@@ -5,7 +5,7 @@
         <div class="card register-card shadow-lg border-0">
           <ng-container *ngIf="!prikaziVerifikaciju">
             <div class="card-header text-center border-0 bg-white pt-4">
-              <h4 class="fw-bold mb-1">Kreiranje naloga</h4>
+              <h4 class="fw-bold mb-1 text-primary">Kreiranje naloga</h4>
               <p class="text-muted small mb-0">DentalCentar – registracija pacijenta</p>
             </div>
 
@@ -14,19 +14,29 @@
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label class="form-label small fw-semibold">Ime</label>
-                    <input
-                      type="text"
-                      name="ime"
-                      class="form-control"
-                      [(ngModel)]="noviKorisnik.ime"
-                      required
-                      #imeField="ngModel"
-                      [class.is-invalid]="imeField.invalid && (imeField.dirty || imeField.touched)"
-                      placeholder="Unesite ime"
-                    />
+
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"
+                        ><i class="bi bi-person text-primary"></i
+                      ></span>
+
+                      <input
+                        type="text"
+                        name="ime"
+                        class="form-control"
+                        [(ngModel)]="noviKorisnik.ime"
+                        required
+                        #imeField="ngModel"
+                        [class.is-invalid]="
+                          imeField.invalid && (imeField.dirty || imeField.touched)
+                        "
+                        placeholder="Vaše ime"
+                      />
+                    </div>
+
                     <div
                       *ngIf="imeField.invalid && (imeField.dirty || imeField.touched)"
-                      class="text-danger small mt-1"
+                      class="text-danger small mt-1 animate__animated animate__fadeIn"
                     >
                       Ime je obavezno.
                     </div>
@@ -34,21 +44,29 @@
 
                   <div class="col-md-6 mb-3">
                     <label class="form-label small fw-semibold">Prezime</label>
-                    <input
-                      type="text"
-                      name="prezime"
-                      class="form-control"
-                      [(ngModel)]="noviKorisnik.prezime"
-                      required
-                      #prezimeField="ngModel"
-                      [class.is-invalid]="
-                        prezimeField.invalid && (prezimeField.dirty || prezimeField.touched)
-                      "
-                      placeholder="Unesite prezime"
-                    />
+
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"
+                        ><i class="bi bi-person-badge text-primary"></i
+                      ></span>
+
+                      <input
+                        type="text"
+                        name="prezime"
+                        class="form-control"
+                        [(ngModel)]="noviKorisnik.prezime"
+                        required
+                        #prezimeField="ngModel"
+                        [class.is-invalid]="
+                          prezimeField.invalid && (prezimeField.dirty || prezimeField.touched)
+                        "
+                        placeholder="Vaše prezime"
+                      />
+                    </div>
+
                     <div
                       *ngIf="prezimeField.invalid && (prezimeField.dirty || prezimeField.touched)"
-                      class="text-danger small mt-1"
+                      class="text-danger small mt-1 animate__animated animate__fadeIn"
                     >
                       Prezime je obavezno.
                     </div>
@@ -58,7 +76,7 @@
                 <div class="mb-3">
                   <label class="form-label small fw-semibold">Email adresa</label>
                   <div class="input-group">
-                    <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                    <span class="input-group-text bg-light"><i class="bi bi-envelope text-primary"></i></span>
 
                     <input
                       type="email"
@@ -87,7 +105,7 @@
                 <div class="mb-3">
                   <label class="form-label small fw-semibold">Lozinka</label>
                   <div class="input-group">
-                    <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                    <span class="input-group-text bg-light"><i class="bi bi-lock text-primary"></i></span>
 
                     <input
                       type="password"
@@ -197,26 +215,32 @@
             Zakazivanje termina, terapije i računi — sve na jednom mestu.
           </p>
 
-          <div class="d-flex gap-3 mb-3">
-            <i class="bi bi-calendar2-check text-primary fs-4"></i>
+          <div class="d-flex gap-3 mb-3 align-items-center feature-item">
+            <div class="icon-box bg-primary-subtle text-primary rounded-3">
+              <i class="bi bi-calendar2-check fs-5"></i>
+            </div>
             <div>
-              <div class="fw-semibold">Zakazivanje termina</div>
+              <div class="fw-semibold text-dark">Zakazivanje termina</div>
               <div class="small text-muted">Izaberite termin u par klikova.</div>
             </div>
           </div>
 
-          <div class="d-flex gap-3 mb-3">
-            <i class="bi bi-bell text-primary fs-4"></i>
+          <div class="d-flex gap-3 mb-3 align-items-center feature-item">
+            <div class="icon-box bg-primary-subtle text-primary rounded-3">
+              <i class="bi bi-bell fs-5"></i>
+            </div>
             <div>
-              <div class="fw-semibold">Podsetnici</div>
+              <div class="fw-semibold text-dark">Podsetnici</div>
               <div class="small text-muted">Ne propuštate pregled.</div>
             </div>
           </div>
 
-          <div class="d-flex gap-3">
-            <i class="bi bi-receipt text-primary fs-4"></i>
+          <div class="d-flex gap-3 align-items-center feature-item">
+            <div class="icon-box bg-primary-subtle text-primary rounded-3">
+              <i class="bi bi-receipt fs-5"></i>
+            </div>
             <div>
-              <div class="fw-semibold">Računi i evidencija</div>
+              <div class="fw-semibold text-dark">Računi i evidencija</div>
               <div class="small text-muted">Sve uredno sačuvano u sistemu.</div>
             </div>
           </div>

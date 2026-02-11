@@ -1,50 +1,57 @@
 <div class="login-page">
   <div class="container">
     <div class="row justify-content-center align-items-center min-vh-100 g-4">
+      
       <div class="col-md-6 col-lg-4">
         <div class="card login-card shadow-lg border-0">
-          <!-- HEADER -->
-          <div class="card-header text-center border-0 bg-white pt-4">
-            <h4 class="fw-bold mb-1">Prijava na sistem</h4>
-            <p class="text-muted small mb-0">DentalCentar – pristup vašem nalogu</p>
+          
+          <div class="card-header text-center border-0 bg-transparent pt-4 pb-0">
+            <h4 class="fw-bold mb-1 text-primary">Prijava na sistem</h4>
+            <p class="text-muted small mb-0">Dobrodošli nazad u DentalCentar</p>
           </div>
 
-          <!-- BODY -->
           <div class="card-body px-4 py-4">
             <form (ngSubmit)="prijaviSe()">
-              <!-- EMAIL -->
+              
               <div class="mb-3">
                 <label class="form-label small fw-semibold">Email adresa</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-light">
-                    <i class="bi bi-envelope"></i>
-                  </span>
+                  <span class="input-group-text"><i class="bi bi-envelope text-primary"></i></span>
                   <input
                     type="email"
                     name="email"
                     class="form-control"
                     [(ngModel)]="korisnik.email"
                     required
+                    email
+                    #emailField="ngModel"
+                    [class.is-invalid]="emailField.invalid && (emailField.dirty || emailField.touched)"
                     placeholder="ime@primer.com"
                   />
                 </div>
+                <div *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)" class="text-danger small mt-1 animate__animated animate__fadeIn">
+                  <div *ngIf="emailField.errors?.['required']">Email je obavezan.</div>
+                  <div *ngIf="emailField.errors?.['email']">Format emaila nije ispravan.</div>
+                </div>
               </div>
 
-              <!-- PASSWORD -->
               <div class="mb-3">
                 <label class="form-label small fw-semibold">Lozinka</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-light">
-                    <i class="bi bi-lock"></i>
-                  </span>
+                  <span class="input-group-text bg-light"><i class="bi bi-lock text-primary"></i></span>
                   <input
                     type="password"
                     name="lozinka"
                     class="form-control"
                     [(ngModel)]="korisnik.lozinka"
                     required
+                    #passField="ngModel"
+                    [class.is-invalid]="passField.invalid && (passField.dirty || passField.touched)"
                     placeholder="••••••••"
                   />
+                </div>
+                <div *ngIf="passField.invalid && (passField.dirty || passField.touched)" class="text-danger small mt-1 animate__animated animate__fadeIn">
+                  Lozinka je obavezna.
                 </div>
               </div>
 
@@ -56,18 +63,20 @@
                   </label>
                 </div>
 
-                <a routerLink="/forgot-password" class="small text-primary text-decoration-none">
+                <a routerLink="/forgot-password" class="small text-primary text-decoration-none fw-semibold">
                   Zaboravljena lozinka?
                 </a>
               </div>
-              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
+
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2 shadow-sm">
                 Prijavi se
               </button>
+
               <div class="text-center mt-4 small">
                 <span class="text-muted">Nemate nalog?</span>
                 <a
                   routerLink="/register"
-                  class="text-primary fw-semibold text-decoration-none ms-1"
+                  class="text-primary fw-bold text-decoration-none ms-1"
                 >
                   Registrujte se
                 </a>
@@ -76,35 +85,42 @@
           </div>
         </div>
 
-        <div class="text-center mt-3 small text-muted">© {{ currentYear }} DentalCentar</div>
+        <div class="text-center mt-3 small text-muted opacity-75">© {{ currentYear }} DentalCentar</div>
       </div>
+
       <div class="col-lg-5 d-none d-lg-block">
-        <div class="card border-0 shadow-sm rounded-4 p-4">
-          <h5 class="fw-bold mb-2">Brže i lakše</h5>
+        <div class="card border-0 shadow-sm rounded-4 p-4 feature-list-card">
+          <h5 class="fw-bold mb-2 text-dark">Brže i lakše</h5>
           <p class="text-muted mb-4">
             Zakazivanje termina, terapije i računi — sve na jednom mestu.
           </p>
 
-          <div class="d-flex gap-3 mb-3">
-            <i class="bi bi-calendar2-check text-primary fs-4"></i>
+          <div class="d-flex gap-3 mb-3 align-items-center feature-item">
+            <div class="icon-box bg-primary-subtle text-primary rounded-3">
+              <i class="bi bi-calendar2-check fs-5"></i>
+            </div>
             <div>
-              <div class="fw-semibold">Zakazivanje termina</div>
+              <div class="fw-semibold text-dark">Zakazivanje termina</div>
               <div class="small text-muted">Izaberite termin u par klikova.</div>
             </div>
           </div>
 
-          <div class="d-flex gap-3 mb-3">
-            <i class="bi bi-bell text-primary fs-4"></i>
+          <div class="d-flex gap-3 mb-3 align-items-center feature-item">
+             <div class="icon-box bg-primary-subtle text-primary rounded-3">
+              <i class="bi bi-bell fs-5"></i>
+            </div>
             <div>
-              <div class="fw-semibold">Podsetnici</div>
+              <div class="fw-semibold text-dark">Podsetnici</div>
               <div class="small text-muted">Ne propuštate pregled.</div>
             </div>
           </div>
 
-          <div class="d-flex gap-3">
-            <i class="bi bi-receipt text-primary fs-4"></i>
+          <div class="d-flex gap-3 align-items-center feature-item">
+             <div class="icon-box bg-primary-subtle text-primary rounded-3">
+              <i class="bi bi-receipt fs-5"></i>
+            </div>
             <div>
-              <div class="fw-semibold">Računi i evidencija</div>
+              <div class="fw-semibold text-dark">Računi i evidencija</div>
               <div class="small text-muted">Sve uredno sačuvano u sistemu.</div>
             </div>
           </div>
@@ -112,11 +128,12 @@
           <hr class="my-4" />
 
           <div class="small text-muted">
-            <i class="bi bi-shield-lock me-1"></i>
+            <i class="bi bi-shield-lock me-1 text-primary"></i>
             Vaši podaci su sigurni i dostupni samo vama.
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>

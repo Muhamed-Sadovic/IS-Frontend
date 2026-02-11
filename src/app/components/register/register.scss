@@ -1,68 +1,119 @@
+/* --- 1. POZADINA (Ista kao Login) --- */
 .register-page {
-  background: linear-gradient(135deg, #f4f7f6, #e8f3ee);
+  background-color: #f0f4f8; /* Veoma svetlo plava */
+  background-image: 
+      radial-gradient(at 10% 10%, rgba(13, 110, 253, 0.05) 0px, transparent 50%),
+      radial-gradient(at 90% 90%, rgba(13, 110, 253, 0.05) 0px, transparent 50%);
+  font-family: 'Segoe UI', sans-serif;
 }
+
 .register-card {
-  border-radius: 18px;
+  border-radius: 20px;
+  overflow: hidden;
 }
-.logo {
-  font-size: 42px;
-}
+
+/* --- 2. INPUTI I GRUPE (Spojeni sa ikonicom - kao Login) --- */
 .form-control {
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 0 10px 10px 0; /* Zaobljeno desno */
+  padding: 12px 12px;
+  border: 1px solid #dee2e6;
+  border-left: none; /* Sklanjamo levu ivicu da se spoji sa ikonicom */
 }
+
 .input-group-text {
-  border-radius: 10px 0 0 10px;
+  border-radius: 10px 0 0 10px; /* Zaobljeno levo */
+  border: 1px solid #dee2e6;
+  border-right: none; /* Sklanjamo desnu ivicu */
+  background-color: #fff; /* Bela pozadina */
+  padding-left: 15px;
 }
-.form-control:focus {
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+
+/* FOKUS EFEKAT (Plavi okvir oko cele grupe) */
+.input-group:focus-within .form-control,
+.input-group:focus-within .input-group-text {
   border-color: #0d6efd;
+  box-shadow: none; /* Sklanjamo default senku pojedinačnih elemenata */
 }
-.btn-success {
-  border-radius: 12px;
-  transition: all 0.2s ease;
+
+.input-group:focus-within {
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+  border-radius: 10px;
 }
-.btn-success:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(25, 135, 84, 0.25);
+
+/* --- 3. DUGME (Isto kao Login) --- */
+.btn-primary {
+  background-color: #0d6efd;
+  border: none;
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-/* --- OTP KOCKICE (POPRAVLJENO CENTRIRANJE) --- */
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(13, 110, 253, 0.2);
+  background-color: #0b5ed7;
+}
+
+/* --- 4. DESNA STRANA (Feature list - Isto kao Login) --- */
+/* Ovo stilizuje karticu desno ako koristiš iste klase u HTML-u */
+.card.border-0.shadow-sm.rounded-4.p-4 {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.icon-box {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-item {
+  transition: transform 0.2s ease;
+}
+
+.feature-item:hover {
+  transform: translateX(5px);
+}
+
+/* --- 5. OTP KOCKICE (SAČUVANO I SREĐENO) --- */
+/* Ovde koristimo !important jer Bootstrap forme nekad "guše" stilove */
 .otp-input {
-  width: 70px;
-  height: 80px;
-
-  /* OVO JE KLJUČNO ZA CENTRIRANJE */
-  padding: 0; /* Sklanja Bootstrap padding */
-  line-height: 80px; /* Mora biti isto kao height da bi broj bio u sredini vertikalno */
-  text-align: center; /* Centrira horizontalno */
-
-  font-size: 3rem; /* Krupan broj */
-  font-weight: 700;
-  color: #0d6efd;
-
-  background-color: #fff;
-  border: 2px solid #e9ecef;
-  border-radius: 16px;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  caret-color: transparent; /* Sakriva kursor da ne smeta */
+  width: 70px !important;
+  height: 80px !important;
+  
+  padding: 0 !important;
+  line-height: 80px !important; /* Centrira vertikalno */
+  text-align: center !important;
+  
+  font-size: 2.5rem !important;
+  font-weight: 700 !important;
+  color: #0d6efd !important;
+  
+  background-color: #fff !important;
+  border: 2px solid #e9ecef !important;
+  border-radius: 16px !important;
+  
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+  caret-color: transparent !important;
 }
 
 .otp-input:focus {
-  border-color: #0d6efd;
-  background-color: #fff;
-  outline: none;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(13, 110, 253, 0.15);
+  border-color: #0d6efd !important;
+  background-color: #fff !important;
+  outline: none !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 10px 25px rgba(13, 110, 253, 0.15) !important;
 }
 
-/* Prilagođavanje za manje ekrane */
+/* Prilagođavanje OTP-a za mobilni */
 @media (max-width: 576px) {
   .otp-input {
-    width: 50px;
-    height: 60px;
-    line-height: 60px; /* Mora pratiti visinu */
-    font-size: 2rem;
+    width: 50px !important;
+    height: 60px !important;
+    line-height: 60px !important;
+    font-size: 1.8rem !important;
   }
 }

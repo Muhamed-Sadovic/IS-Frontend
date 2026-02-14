@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import * as bootstrap from 'bootstrap';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-dashboard',
@@ -341,29 +342,110 @@ export class Dashboard implements OnInit {
   // =================================================================
 
   pripremiDatumVreme() {
+    console.log('Priprema datuma:', this.izabranDatum, this.izabranoVreme); // DEBUG
+
     if (this.izabranDatum && this.izabranoVreme) {
+      // Pravimo format: "2024-02-15T14:30:00"
       this.noviTermin.datumVreme = `${this.izabranDatum}T${this.izabranoVreme}:00`;
+      console.log('Generisan datumVreme:', this.noviTermin.datumVreme); // DEBUG
+    } else {
+      this.noviTermin.datumVreme = '';
     }
+  }
+
+  ucitajSlobodneTermine() {
+    console.log('--- POKUŠAJ UČITAVANJA ---');
+    console.log('Doktor ID:', this.noviTermin.stomatologId);
+    console.log('Datum:', this.izabranDatum);
+    if (!this.noviTermin.stomatologId || !this.izabranDatum) {
+      console.warn('STOP: Fale podaci (doktor ili datum je null/prazan).');
+      return;
+    }
+    console.log('Podaci OK, šaljem zahtev na server...');
+    const url = `https://localhost:7075/api/termin/slobodni-termini?stomatologId=${this.noviTermin.stomatologId}&datum=${this.izabranDatum}`;
+
+    this.http.get<string[]>(url).subscribe({
+      next: (termini) => {
+        console.log('Izabran datum:', this.izabranDatum);
+        console.log('Stigli slobodni termini sa servera:', termini);
+        this.slobodniTermini = termini;
+        if (this.izabranoVreme && !this.slobodniTermini.includes(this.izabranoVreme)) {
+          this.izabranoVreme = '';
+          Swal.fire('Ups!', 'Izabrani termin je upravo zauzet.', 'warning');
+        }
+      },
+      error: (err) => {
+        console.error('Greška pri učitavanju termina:', err);
+      },
+    });
   }
 
   zakazi() {
     this.pripremiDatumVreme();
 
-    // Provera da li su sva polja popunjena (UKLJUČUJUĆI USLUGU)
-    if (!this.noviTermin.stomatologId || !this.noviTermin.datumVreme || !this.noviTermin.uslugaId) {
-      alert('Molimo izaberite doktora, uslugu, datum i vreme.');
+    // 2. DEBUG: Ispiši u konzolu šta tačno šaljemo
+    console.log('Šaljem objekat:', this.noviTermin);
+
+    // 3. VALIDACIJA
+    if (!this.noviTermin.stomatologId) {
+      Swal.fire('Greška', 'Niste izabrali stomatologa!', 'warning');
+      return;
+    }
+    if (!this.noviTermin.uslugaId) {
+      Swal.fire('Greška', 'Niste izabrali uslugu!', 'warning');
+      return;
+    }
+    if (!this.noviTermin.datumVreme) {
+      Swal.fire('Greška', 'Niste izabrali datum i vreme!', 'warning');
       return;
     }
 
+    // 4. SLANJE NA BACKEND
+    this.isProcessing = true; // Blokiraj dugme da ne klikne dvaput
+
     this.http.post('https://localhost:7075/api/termin/zakazi', this.noviTermin).subscribe({
       next: (res: any) => {
-        alert('Uspešno ste poslali zahtev. Status: NA ČEKANJU.');
-        // Reset polja
-        this.izabranDatum = '';
+        console.log('Uspešno zakazano:', res);
+        this.isProcessing = false;
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Uspešno!',
+          text: 'Termin je zakazan i čeka potvrdu.',
+          timer: 3000,
+          showConfirmButton: false,
+        });
+
+        // 5. OSVEŽAVANJE PODATAKA
+        this.loadMyAppointments(); // Osveži moju tabelu
+        this.ucitajSlobodneTermine(); // Osveži listu termina (da skloniš zauzeti)
+
+        // 6. RESET FORME
         this.izabranoVreme = '';
-        this.noviTermin = { stomatologId: null, uslugaId: null, datumVreme: '', napomena: '' };
+        this.noviTermin = {
+          stomatologId: this.noviTermin.stomatologId, // Ostavljamo doktora
+          uslugaId: this.noviTermin.uslugaId, // Ostavljamo uslugu
+          datumVreme: '',
+          napomena: '',
+        };
       },
-      error: (err) => alert(err.error),
+      error: (err) => {
+        console.error('Greška pri zakazivanju:', err);
+        this.isProcessing = false;
+
+        // Prikaz greške sa servera
+        Swal.fire({
+          icon: 'error',
+          title: 'Greška',
+          text: err.error || 'Došlo je do greške na serveru.',
+        });
+
+        // Ako je greška "Termin zauzet", osveži listu
+        if (err.status === 400) {
+          this.ucitajSlobodneTermine();
+          this.izabranoVreme = '';
+        }
+      },
     });
   }
 

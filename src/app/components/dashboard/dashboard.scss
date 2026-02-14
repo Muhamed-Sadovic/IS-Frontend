@@ -119,3 +119,100 @@
     color: #212529;
   }
 }
+
+/* --- ZAJEDNIČKI ELEMENTI --- */
+.icon-box {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.x-small {
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+/* --- KARTICE --- */
+.card {
+  transition: transform 0.2s ease-in-out;
+  background: #ffffff;
+}
+
+/* --- FORMA (INPUTI I SELECT) --- */
+.form-select,
+.form-control {
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  &:focus {
+    box-shadow: none;
+    border-color: #0d6efd;
+    background-color: #fff !important;
+  }
+}
+
+.input-group-text {
+  background-color: #f8f9fa; /* bg-light */
+}
+
+/* --- TIME GRID (MODERNI ODABIR VREMENA) --- */
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 kolone */
+  gap: 8px;
+}
+
+.time-slot-label {
+  display: block;
+  text-align: center;
+  padding: 8px 4px;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+  }
+}
+
+/* Kada je radio button selektovan (CSS trik) */
+.btn-check:checked + .time-slot-label {
+  background-color: #0d6efd;
+  color: #fff;
+  border-color: #0d6efd;
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+  transform: translateY(-1px);
+}
+
+/* --- TABELA --- */
+.custom-table {
+  th {
+    font-weight: 700;
+    color: #6c757d;
+  }
+
+  td {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+
+  tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.02);
+  }
+}
+
+.hover-bg-danger:hover {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+.form-select {
+  padding-left: 10px !important; 
+}

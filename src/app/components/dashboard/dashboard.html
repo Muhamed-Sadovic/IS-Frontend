@@ -114,6 +114,7 @@
             class="form-control border-0 ps-2 py-2"
             placeholder="Pronađi korisnika..."
             [(ngModel)]="searchTerm"
+            (input)="currentPage = 1"
             style="box-shadow: none"
           />
         </div>
@@ -123,6 +124,7 @@
         <select
           class="form-select shadow-sm rounded-pill border py-2 px-3"
           [(ngModel)]="roleFilter"
+          (change)="currentPage = 1"
           style="box-shadow: none; cursor: pointer"
         >
           <option value="Sve">Sve uloge</option>
@@ -134,7 +136,7 @@
 
       <div class="col-md-4 col-lg-6 text-md-end">
         <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
-          Prikazano: <strong>{{ filteredUsers.length }}</strong> korisnika
+          Ukupno: <strong>{{ filteredUsers.length }}</strong> korisnika
         </span>
       </div>
     </div>
@@ -151,7 +153,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let u of filteredUsers">
+            <tr *ngFor="let u of paginatedUsers">
               <td class="ps-4">
                 <div class="d-flex align-items-center">
                   <div class="avatar-circle me-3" [ngClass]="getRoleClass(u.uloga)">
@@ -175,19 +177,54 @@
                 </button>
               </td>
             </tr>
+
             <tr *ngIf="filteredUsers.length === 0">
               <td colspan="4" class="text-center py-5 text-muted">Nema pronađenih korisnika.</td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <div class="card-footer bg-white border-0 py-3" *ngIf="filteredUsers.length > itemsPerPage">
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button
+                class="page-link border-0 rounded-circle mx-1"
+                (click)="changePage(currentPage - 1)"
+              >
+                <i class="bi bi-chevron-left"></i>
+              </button>
+            </li>
+
+            <li class="page-item" *ngFor="let p of pagesArray">
+              <button
+                class="page-link border-0 rounded-circle mx-1 fw-bold"
+                [class.active-page]="currentPage === p"
+                (click)="changePage(p)"
+              >
+                {{ p }}
+              </button>
+            </li>
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button
+                class="page-link border-0 rounded-circle mx-1"
+                (click)="changePage(currentPage + 1)"
+              >
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
 
   <div *ngIf="adminTab === 'appointments'" class="animate__animated animate__fadeIn">
-    <div class="row mb-4">
+    <div class="row mb-4 align-items-center">
       <div class="col-md-5 col-lg-4">
-        <div class="input-group shadow-sm rounded-pill overflow-hidden border">
+        <div class="input-group shadow-sm rounded-pill overflow-hidden border bg-white">
           <span class="input-group-text bg-white border-0 ps-3">
             <i class="bi bi-filter text-success"></i>
           </span>
@@ -196,9 +233,16 @@
             class="form-control border-0 ps-2 py-2"
             placeholder="Pretraži termine..."
             [(ngModel)]="appointmentSearch"
+            (input)="appointmentsPage = 1"
             style="box-shadow: none"
           />
         </div>
+      </div>
+
+      <div class="col-md-7 col-lg-8 text-md-end">
+        <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+          Ukupno: <strong>{{ filteredAppointments.length }}</strong> termina
+        </span>
       </div>
     </div>
 
@@ -215,11 +259,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let t of filteredAppointments">
+            <tr *ngFor="let t of paginatedAppointments">
               <td class="ps-4">
-                <div class="fw-bold text-dark">{{ t.datumVreme | date : 'dd.MM.yyyy' }}</div>
+                <div class="fw-bold text-dark">{{ t.datumVreme | date: 'dd.MM.yyyy' }}</div>
                 <div class="text-primary small fw-semibold">
-                  {{ t.datumVreme | date : 'HH:mm' }}h
+                  {{ t.datumVreme | date: 'HH:mm' }}h
                 </div>
               </td>
               <td>{{ t.pacijentIme }}</td>
@@ -231,7 +275,7 @@
                     'bg-warning-subtle text-warning': t.status === 'NaCekanju',
                     'bg-success-subtle text-success': t.status === 'Prihvacen',
                     'bg-danger-subtle text-danger': t.status === 'Odbijen',
-                    'bg-secondary-subtle text-secondary': t.status === 'Zavrsen'
+                    'bg-secondary-subtle text-secondary': t.status === 'Zavrsen',
                   }"
                 >
                   {{ t.status }}
@@ -263,6 +307,7 @@
                 </button>
               </td>
             </tr>
+
             <tr *ngIf="filteredAppointments.length === 0">
               <td colspan="5" class="text-center py-5 text-muted">
                 Nema zakazanih termina za prikazivanje.
@@ -271,9 +316,45 @@
           </tbody>
         </table>
       </div>
+
+      <div
+        class="card-footer bg-white border-0 py-3"
+        *ngIf="filteredAppointments.length > appointmentsPerPage"
+      >
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center mb-0">
+            <li class="page-item" [class.disabled]="appointmentsPage === 1">
+              <button
+                class="page-link border-0 rounded-circle mx-1"
+                (click)="changeAppPage(appointmentsPage - 1)"
+              >
+                <i class="bi bi-chevron-left"></i>
+              </button>
+            </li>
+
+            <li class="page-item" *ngFor="let p of appPagesArray">
+              <button
+                class="page-link border-0 rounded-circle mx-1 fw-bold"
+                [class.active-page]="appointmentsPage === p"
+                (click)="changeAppPage(p)"
+              >
+                {{ p }}
+              </button>
+            </li>
+
+            <li class="page-item" [class.disabled]="appointmentsPage === totalAppPages">
+              <button
+                class="page-link border-0 rounded-circle mx-1"
+                (click)="changeAppPage(appointmentsPage + 1)"
+              >
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
-
   <div *ngIf="adminTab === 'inventar'" class="animate__animated animate__fadeIn">
     <div class="row g-4">
       <div class="col-lg-4">
@@ -411,9 +492,9 @@
         <tbody>
           <tr *ngFor="let t of doctorAppointments" class="animate__animated animate__fadeIn">
             <td class="ps-4">
-              <div class="fw-bold text-dark">{{ t.datumVreme | date : 'HH:mm' }}h</div>
+              <div class="fw-bold text-dark">{{ t.datumVreme | date: 'HH:mm' }}h</div>
               <div class="text-primary small fw-semibold">
-                {{ t.datumVreme | date : 'dd.MM.yyyy' }}
+                {{ t.datumVreme | date: 'dd.MM.yyyy' }}
               </div>
             </td>
             <td>
@@ -661,11 +742,9 @@
                 <tr *ngFor="let t of myAppointments">
                   <td class="ps-4">
                     <div class="d-flex flex-column">
-                      <span class="fw-bold text-dark">{{
-                        t.datumVreme | date : 'dd.MM.yyyy'
-                      }}</span>
+                      <span class="fw-bold text-dark">{{ t.datumVreme | date: 'dd.MM.yyyy' }}</span>
                       <span class="small text-primary fw-bold"
-                        ><i class="bi bi-clock me-1"></i>{{ t.datumVreme | date : 'HH:mm' }}h</span
+                        ><i class="bi bi-clock me-1"></i>{{ t.datumVreme | date: 'HH:mm' }}h</span
                       >
                     </div>
                   </td>
@@ -687,7 +766,7 @@
                           t.status === 'Prihvacen',
                         'bg-danger-subtle text-danger border-danger-subtle': t.status === 'Odbijen',
                         'bg-secondary-subtle text-secondary border-secondary-subtle':
-                          t.status === 'Zavrsen'
+                          t.status === 'Zavrsen',
                       }"
                     >
                       <i
@@ -696,7 +775,7 @@
                           'bi-hourglass-split': t.status === 'NaCekanju',
                           'bi-check-circle-fill': t.status === 'Prihvacen',
                           'bi-x-circle-fill': t.status === 'Odbijen',
-                          'bi-flag-fill': t.status === 'Zavrsen'
+                          'bi-flag-fill': t.status === 'Zavrsen',
                         }"
                       ></i>
                       {{ t.status }}

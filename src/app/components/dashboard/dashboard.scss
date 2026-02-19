@@ -216,3 +216,30 @@
 .form-select {
   padding-left: 10px !important; 
 }
+/* --- PAGINACIJA --- */
+.page-link {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  background-color: transparent;
+  transition: all 0.2s;
+  
+  &:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+  }
+}
+
+.active-page {
+  background-color: #0d6efd !important;
+  color: white !important;
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+}
+
+.page-item.disabled .page-link {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

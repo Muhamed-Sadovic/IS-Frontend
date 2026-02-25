@@ -1,10 +1,8 @@
 <div class="login-page">
   <div class="container">
     <div class="row justify-content-center align-items-center min-vh-100 g-4">
-      
       <div class="col-md-6 col-lg-4">
         <div class="card login-card shadow-lg border-0">
-          
           <div class="card-header text-center border-0 bg-transparent pt-4 pb-0">
             <h4 class="fw-bold mb-1 text-primary">Prijava na sistem</h4>
             <p class="text-muted small mb-0">Dobrodošli nazad u DentalCentar</p>
@@ -12,7 +10,6 @@
 
           <div class="card-body px-4 py-4">
             <form (ngSubmit)="prijaviSe()">
-              
               <div class="mb-3">
                 <label class="form-label small fw-semibold">Email adresa</label>
                 <div class="input-group">
@@ -25,20 +22,27 @@
                     required
                     email
                     #emailField="ngModel"
-                    [class.is-invalid]="emailField.invalid && (emailField.dirty || emailField.touched)"
+                    [class.is-invalid]="
+                      emailField.invalid && (emailField.dirty || emailField.touched)
+                    "
                     placeholder="ime@primer.com"
                   />
                 </div>
-                <div *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)" class="text-danger small mt-1 animate__animated animate__fadeIn">
+                <div
+                  *ngIf="emailField.invalid && (emailField.dirty || emailField.touched)"
+                  class="text-danger small mt-1 animate__animated animate__fadeIn"
+                >
                   <div *ngIf="emailField.errors?.['required']">Email je obavezan.</div>
                   <div *ngIf="emailField.errors?.['email']">Format emaila nije ispravan.</div>
                 </div>
               </div>
 
-              <div class="mb-3">
+              <div class="mb-4">
                 <label class="form-label small fw-semibold">Lozinka</label>
                 <div class="input-group">
-                  <span class="input-group-text bg-light"><i class="bi bi-lock text-primary"></i></span>
+                  <span class="input-group-text bg-light"
+                    ><i class="bi bi-lock text-primary"></i
+                  ></span>
                   <input
                     type="password"
                     name="lozinka"
@@ -50,34 +54,21 @@
                     placeholder="••••••••"
                   />
                 </div>
-                <div *ngIf="passField.invalid && (passField.dirty || passField.touched)" class="text-danger small mt-1 animate__animated animate__fadeIn">
+                <div
+                  *ngIf="passField.invalid && (passField.dirty || passField.touched)"
+                  class="text-danger small mt-1 animate__animated animate__fadeIn"
+                >
                   Lozinka je obavezna.
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="rememberMe" />
-                  <label class="form-check-label small text-muted" for="rememberMe">
-                    Zapamti me
-                  </label>
-                </div>
-
-                <a routerLink="/forgot-password" class="small text-primary text-decoration-none fw-semibold">
-                  Zaboravljena lozinka?
-                </a>
-              </div>
-
-              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2 shadow-sm">
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm">
                 Prijavi se
               </button>
 
               <div class="text-center mt-4 small">
                 <span class="text-muted">Nemate nalog?</span>
-                <a
-                  routerLink="/register"
-                  class="text-primary fw-bold text-decoration-none ms-1"
-                >
+                <a routerLink="/register" class="text-primary fw-semibold text-decoration-none ms-1">
                   Registrujte se
                 </a>
               </div>
@@ -85,7 +76,9 @@
           </div>
         </div>
 
-        <div class="text-center mt-3 small text-muted opacity-75">© {{ currentYear }} DentalCentar</div>
+        <div class="text-center mt-3 small text-muted opacity-75">
+          © {{ currentYear }} DentalCentar
+        </div>
       </div>
 
       <div class="col-lg-5 d-none d-lg-block">
@@ -106,7 +99,7 @@
           </div>
 
           <div class="d-flex gap-3 mb-3 align-items-center feature-item">
-             <div class="icon-box bg-primary-subtle text-primary rounded-3">
+            <div class="icon-box bg-primary-subtle text-primary rounded-3">
               <i class="bi bi-bell fs-5"></i>
             </div>
             <div>
@@ -116,7 +109,7 @@
           </div>
 
           <div class="d-flex gap-3 align-items-center feature-item">
-             <div class="icon-box bg-primary-subtle text-primary rounded-3">
+            <div class="icon-box bg-primary-subtle text-primary rounded-3">
               <i class="bi bi-receipt fs-5"></i>
             </div>
             <div>
@@ -133,7 +126,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>

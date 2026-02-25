@@ -17,7 +17,7 @@ export class Dashboard implements OnInit {
   @ViewChild('docModal') docModalElement!: ElementRef;
   @ViewChild('pregledModal') pregledModalElement!: ElementRef;
 
-  private modalInstance: any; // Za čuvanje instance pregled modala
+  private modalInstance: any;
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
 
@@ -70,6 +70,7 @@ export class Dashboard implements OnInit {
   itemsPerPage: number = 10;
   appointmentsPage: number = 1;
   appointmentsPerPage: number = 10;
+  today: Date = new Date();
 
   // =================================================================
   // LIFECYCLE HOOKS
@@ -460,18 +461,35 @@ export class Dashboard implements OnInit {
   dodajUPotrosnju() {
     if (!this.izabranMaterijalId || this.kolicinaZaPotrosnju <= 0) return;
 
-    // Nađi naziv materijala radi prikaza
+    // 1. Nađi materijal u glavnom inventaru (da vidimo koliko ga stvarno ima)
     const materijal = this.inventar.find((i) => i.id == this.izabranMaterijalId);
+    if (!materijal) return; // Sigurnosna provera u slučaju da ne nađe materijal
 
-    // Proveri da li već imamo taj materijal u listi, ako da, samo povećaj broj
+    // 2. Proveri da li već imamo taj materijal u listi (korpi)
     const postojeci = this.listaPotrosnje.find((p) => p.inventarId == this.izabranMaterijalId);
 
+    // 3. Izračunaj koliko ukupno doktor pokušava da skine sa stanja
+    const trenutnoUKorpi = postojeci ? postojeci.kolicina : 0;
+    const ukupnoZaPotrosnju = trenutnoUKorpi + this.kolicinaZaPotrosnju;
+
+    // === 4. GLAVNA ZAŠTITA ===
+    if (ukupnoZaPotrosnju > materijal.kolicina) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Nedovoljno na stanju!',
+        text: `Na stanju ima samo ${materijal.kolicina} kom. materijala "${materijal.naziv}". Vi pokušavate da skinete ukupno ${ukupnoZaPotrosnju}.`,
+        confirmButtonColor: '#d33'
+      });
+      return; // PREKID! Blokiramo ga i ne idemo dalje.
+    }
+
+    // === 5. TVOJA LOGIKA KOJA SE IZVRŠAVA SAMO AKO IMA DOVOLJNO MATERIJALA ===
     if (postojeci) {
       postojeci.kolicina += this.kolicinaZaPotrosnju;
     } else {
       this.listaPotrosnje.push({
         inventarId: this.izabranMaterijalId,
-        naziv: materijal ? materijal.naziv : 'Nepoznato',
+        naziv: materijal.naziv, // Sigurno imamo naziv jer smo prošli proveru
         kolicina: this.kolicinaZaPotrosnju,
       });
     }
@@ -584,30 +602,16 @@ export class Dashboard implements OnInit {
   }
 
   ucitajSlobodneTermine() {
-    console.log('--- POKUŠAJ UČITAVANJA ---');
-    console.log('Doktor ID:', this.noviTermin.stomatologId);
-    console.log('Datum:', this.izabranDatum);
-    if (!this.noviTermin.stomatologId || !this.izabranDatum) {
-      console.warn('STOP: Fale podaci (doktor ili datum je null/prazan).');
-      return;
-    }
-    console.log('Podaci OK, šaljem zahtev na server...');
-    const url = `https://localhost:7075/api/termin/slobodni-termini?stomatologId=${this.noviTermin.stomatologId}&datum=${this.izabranDatum}`;
+    // 1. Ručno generišemo fiksnu listu termina (uvek su vidljivi)
+    this.slobodniTermini = [
+      "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+      "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+      "15:00", "15:30", "16:00", "16:30", "17:00"
+    ];
 
-    this.http.get<string[]>(url).subscribe({
-      next: (termini) => {
-        console.log('Izabran datum:', this.izabranDatum);
-        console.log('Stigli slobodni termini sa servera:', termini);
-        this.slobodniTermini = termini;
-        if (this.izabranoVreme && !this.slobodniTermini.includes(this.izabranoVreme)) {
-          this.izabranoVreme = '';
-          Swal.fire('Ups!', 'Izabrani termin je upravo zauzet.', 'warning');
-        }
-      },
-      error: (err) => {
-        console.error('Greška pri učitavanju termina:', err);
-      },
-    });
+    // 2. Samo poništavamo izabrani "kružić" vremena da pacijent mora 
+    // ponovo da klikne na vreme ako promeni doktora ili datum
+    this.izabranoVreme = '';
   }
 
   zakazi() {
@@ -761,6 +765,7 @@ export class Dashboard implements OnInit {
 
   postaviGraniceDatuma() {
     const sad = new Date();
+    sad.setDate(sad.getDate() + 1);
     const zaSedamDana = new Date();
     zaSedamDana.setDate(sad.getDate() + 7);
     this.minDatum = sad.toISOString().split('.')[0].slice(0, 16);
@@ -928,5 +933,140 @@ export class Dashboard implements OnInit {
         }, 3000); // Tvojih 3 sekunde čekanja
       }
     });
+    
+  }
+  getKriticniInventarCount(): number {
+    if (!this.data || !this.data.inventar) return 0;
+    return this.data.inventar.filter((i: any) => i.kolicina < 20).length;
+  }
+
+  getTerminiNaCekanjuCount(): number {
+    // Pretpostavljam da imaš niz svih termina. Zameni 'this.filteredAppointments' sa imenom tvog glavnog niza za termine ako se zove drugačije.
+    if (!this.filteredAppointments) return 0;
+    return this.filteredAppointments.filter(t => t.status === 'NaCekanju').length;
+  }
+
+  getOdbijeniTerminiCount(): number {
+    if (!this.filteredAppointments) return 0;
+    return this.filteredAppointments.filter(t => t.status === 'Odbijen' || t.status === 'Otkazan').length;
+  }
+
+  getProcenatUspesnih(): number {
+    if (!this.filteredAppointments || this.filteredAppointments.length === 0) return 0;
+    const uspesni = this.filteredAppointments.filter(t => t.status === 'Prihvacen' || t.status === 'Zavrsen').length;
+    // Računamo procenat i zaokružujemo na ceo broj
+    return Math.round((uspesni / this.filteredAppointments.length) * 100);
+  }
+  // --- PRIKAZ MEDICINSKOG IZVEŠTAJA ---
+  prikaziIzvestaj(termin: any) {
+    console.log('Ovo mi je stiglo sa servera za ovaj termin:', termin);
+    // Koristimo SweetAlert za elegantan prikaz "Kartona"
+    Swal.fire({
+      title: 'Medicinski izveštaj',
+      html: `
+        <div class="text-start mt-3">
+          <p class="mb-1 text-muted small text-uppercase fw-bold">Detalji pregleda</p>
+          <div class="bg-light p-3 rounded-3 mb-3 border">
+            <p class="mb-1"><strong>Datum:</strong> ${new Date(termin.datumVreme).toLocaleDateString('sr-RS')}</p>
+            <p class="mb-1"><strong>Stomatolog:</strong> Dr ${termin.stomatologIme}</p>
+            <p class="mb-0"><strong>Usluga:</strong> ${termin.tretman}</p>
+          </div>
+          
+          <p class="mb-1 text-muted small text-uppercase fw-bold">Nalaz lekara</p>
+          <div class="bg-primary-subtle border-start border-primary border-4 p-3 rounded-end mb-3">
+            <p class="mb-1"><strong>Dijagnoza:</strong> ${termin.dijagnoza || 'Nije uneta posebna dijagnoza.'}</p>
+            <p class="mb-0"><strong>Terapija:</strong> ${termin.terapija || 'Redovan tretman završen.'}</p>
+          </div>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Zatvori',
+      confirmButtonColor: '#0d6efd'
+    });
+  }
+
+  // --- GENERISANJE RAČUNA I PDF-a ---
+  stampajRacun(termin: any) {
+    // 1. Priprema HTML šablona za račun
+    const racunHtml = `
+      <html>
+        <head>
+          <title>Račun - ${termin.id}</title>
+          <style>
+            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #333; }
+            .header { text-align: center; border-bottom: 2px solid #ddd; padding-bottom: 20px; margin-bottom: 30px; }
+            .logo { font-size: 24px; font-weight: bold; color: #0d6efd; margin-bottom: 5px; }
+            .info { margin-bottom: 40px; display: flex; justify-content: space-between; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+            th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+            th { background-color: #f8f9fa; }
+            .total { text-align: right; font-size: 20px; font-weight: bold; margin-top: 20px; border-top: 2px solid #333; padding-top: 10px; }
+            .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #777; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">🦷 DentalCentar</div>
+            <div>Vaš osmeh je naša briga</div>
+          </div>
+          
+          <div class="info">
+            <div>
+              <strong>Pacijent:</strong> ${termin.pacijentIme}<br>
+              <strong>Email:</strong> ${termin.pacijentEmail}
+            </div>
+            <div style="text-align: right;">
+              <strong>Broj računa:</strong> #RC-${termin.id}-${new Date().getFullYear()}<br>
+              <strong>Datum uplate:</strong> ${new Date().toLocaleDateString('sr-RS')}<br>
+              <strong>Status:</strong> <span style="color: green;">PLAĆENO</span>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Opis usluge</th>
+                <th>Doktor</th>
+                <th>Datum pregleda</th>
+                <th style="text-align: right;">Iznos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${termin.tretman}</td>
+                <td>Dr ${termin.stomatologIme}</td>
+                <td>${new Date(termin.datumVreme).toLocaleDateString('sr-RS')}</td>
+                <td style="text-align: right;">${termin.cena} RSD</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="total">
+            Ukupno za uplatu: ${termin.cena} RSD
+          </div>
+
+          <div class="footer">
+            Hvala Vam na poverenju!<br>
+            Ovaj račun je elektronski generisan i važeći je bez pečata i potpisa.
+          </div>
+        </body>
+      </html>
+    `;
+
+    // 2. Trik: Otvaramo novi skriveni prozor, ubacujemo HTML i zovemo Print
+    const printWindow = window.open('', '', 'height=600,width=800');
+    if (printWindow) {
+      printWindow.document.write(racunHtml);
+      printWindow.document.close();
+      printWindow.focus();
+      
+      // Pokreće prozor za štampanje (gde korisnik može da bira 'Save as PDF')
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 250); // Čekamo delić sekunde da se HTML lepo učita
+    } else {
+      Swal.fire('Greška', 'Vaš browser je blokirao iskačući prozor za štampu.', 'error');
+    }
   }
 }

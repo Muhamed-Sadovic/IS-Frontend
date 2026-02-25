@@ -45,59 +45,194 @@
 
   <div *ngIf="adminTab === 'stats'" class="animate__animated animate__fadeIn">
     <div class="row g-4 mb-5">
-      <div class="col-md-6 col-lg-4">
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary text-white h-100">
+      <div class="col-md-6 col-lg-3">
+        <div
+          class="card border-0 shadow-sm rounded-4 p-4 text-white h-100"
+          style="background: linear-gradient(135deg, #0d6efd, #0dcaf0)"
+        >
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <h6 class="text-white-50 text-uppercase small">Ukupno Korisnika</h6>
-              <h2 class="fw-bold mb-0">{{ data.ukupnoPacijenata }}</h2>
+              <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Ukupno Pacijenata</h6>
+              <h2 class="fw-bold mb-0">{{ data.ukupnoPacijenata || 0 }}</h2>
             </div>
-            <i class="bi bi-people fs-1 opacity-50"></i>
+            <div
+              class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center"
+              style="width: 60px; height: 60px"
+            >
+              <i class="bi bi-people fs-3"></i>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-md-6 col-lg-4">
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-success text-white h-100">
+
+      <div class="col-md-6 col-lg-3">
+        <div
+          class="card border-0 shadow-sm rounded-4 p-4 text-white h-100"
+          style="background: linear-gradient(135deg, #198754, #20c997)"
+        >
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <h6 class="text-white-50 text-uppercase small">Svi Termini</h6>
-              <h2 class="fw-bold mb-0">{{ data.ukupnoTermina }}</h2>
+              <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Svi Termini</h6>
+              <h2 class="fw-bold mb-0">{{ data.ukupnoTermina || 0 }}</h2>
             </div>
-            <i class="bi bi-calendar-check fs-1 opacity-50"></i>
+            <div
+              class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center"
+              style="width: 60px; height: 60px"
+            >
+              <i class="bi bi-calendar-check fs-3"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div
+          class="card border-0 shadow-sm rounded-4 p-4 text-white h-100"
+          style="background: linear-gradient(135deg, #fd7e14, #ffc107)"
+        >
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Na čekanju</h6>
+              <h2 class="fw-bold mb-0">{{ getTerminiNaCekanjuCount() }}</h2>
+            </div>
+            <div
+              class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center"
+              style="width: 60px; height: 60px"
+            >
+              <i class="bi bi-hourglass-split fs-3"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div
+          class="card border-0 shadow-sm rounded-4 p-4 text-white h-100"
+          style="background: linear-gradient(135deg, #dc3545, #f06595)"
+        >
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Kritične Zalihe</h6>
+              <h2 class="fw-bold mb-0">{{ getKriticniInventarCount() }}</h2>
+            </div>
+            <div
+              class="bg-white bg-opacity-25 rounded-circle p-3 d-flex align-items-center justify-content-center"
+              style="width: 60px; height: 60px"
+            >
+              <i class="bi bi-exclamation-triangle fs-3"></i>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-      <div class="card-header bg-white py-3 border-0">
-        <h5 class="fw-bold mb-0 text-dark">
-          <i class="bi bi-box-seam me-2 text-primary"></i>Kritični Inventar
-        </h5>
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+          <div
+            class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center"
+          >
+            <h5 class="fw-bold mb-0 text-dark">
+              <i class="bi bi-box-seam me-2 text-danger"></i>Kritični Inventar
+            </h5>
+            <button
+              class="btn btn-sm btn-outline-primary rounded-pill px-3"
+              (click)="adminTab = 'inventar'; loadInventar()"
+            >
+              Reši zalihe
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th class="ps-4">Naziv Materijala</th>
+                  <th class="text-center">Količina</th>
+                  <th>Akcija</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let item of data.inventar">
+                  <tr *ngIf="item.kolicina < 20">
+                    <td class="ps-4 fw-semibold">{{ item.naziv }}</td>
+                    <td class="text-center">
+                      <span class="badge bg-danger fs-6 rounded-pill px-3">{{
+                        item.kolicina
+                      }}</span>
+                    </td>
+                    <td>
+                      <span class="text-danger small fw-bold"
+                        ><i class="bi bi-arrow-down-circle"></i> Hitna nabavka</span
+                      >
+                    </td>
+                  </tr>
+                </ng-container>
+                <tr *ngIf="getKriticniInventarCount() === 0">
+                  <td colspan="3" class="text-center text-muted py-4">
+                    Sve zalihe su na optimalnom nivou.
+                    <i class="bi bi-emoji-smile text-success"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="bg-light">
-            <tr>
-              <th class="ps-4">Naziv</th>
-              <th class="text-center">Količina</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let item of data.inventar">
-              <tr *ngIf="item.kolicina < 20">
-                <td class="ps-4 fw-semibold">{{ item.naziv }}</td>
 
-                <td class="text-center fw-bold text-danger">{{ item.kolicina }}</td>
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+          <h5 class="fw-bold mb-4 text-dark">
+            <i class="bi bi-pie-chart me-2 text-primary"></i>Status Termina
+          </h5>
 
-                <td>
-                  <span class="badge bg-danger rounded-pill px-3">Potrebna nabavka</span>
-                </td>
-              </tr>
-            </ng-container>
-          </tbody>
-        </table>
+          <div class="mb-4">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="small fw-semibold text-success">Prihvaćeni i Završeni</span>
+              <span class="small fw-bold">{{ getProcenatUspesnih() }}%</span>
+            </div>
+            <div class="progress rounded-pill" style="height: 10px">
+              <div
+                class="progress-bar bg-success"
+                role="progressbar"
+                [style.width]="getProcenatUspesnih() + '%'"
+              ></div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="small fw-semibold text-warning text-darken"
+                >Na čekanju (Potrebna akcija)</span
+              >
+              <span class="small fw-bold">{{ getTerminiNaCekanjuCount() }} termina</span>
+            </div>
+            <div class="progress rounded-pill" style="height: 10px">
+              <div
+                class="progress-bar bg-warning"
+                role="progressbar"
+                [style.width]="(getTerminiNaCekanjuCount() / (data.ukupnoTermina || 1)) * 100 + '%'"
+              ></div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="small fw-semibold text-danger">Odbijeni / Otkazani</span>
+              <span class="small fw-bold">{{ getOdbijeniTerminiCount() }} termina</span>
+            </div>
+            <div class="progress rounded-pill" style="height: 10px">
+              <div
+                class="progress-bar bg-danger"
+                role="progressbar"
+                [style.width]="(getOdbijeniTerminiCount() / (data.ukupnoTermina || 1)) * 100 + '%'"
+              ></div>
+            </div>
+          </div>
+
+          <div class="mt-auto pt-3 border-top text-center">
+            <p class="small text-muted mb-0">Ažurirano: {{ today | date: 'dd.MM.yyyy HH:mm' }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -536,7 +671,8 @@
 <div class="modal fade" id="docModal" #docModal tabindex="-1" aria-labelledby="docModalLabel">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow rounded-4">
-      <div class="modal-header bg-success text-white rounded-top-4">
+      
+      <div class="modal-header bg-primary text-white rounded-top-4">
         <h5 class="modal-title fw-bold">
           <i class="bi bi-person-plus-fill me-2"></i>Novi Stomatolog
         </h5>
@@ -547,6 +683,7 @@
           aria-label="Close"
         ></button>
       </div>
+      
       <div class="modal-body p-4">
         <form #docForm="ngForm">
           <div class="mb-3">
@@ -589,9 +726,10 @@
               required
             />
           </div>
+          
           <button
             type="button"
-            class="btn btn-success w-100 rounded-pill fw-bold py-2"
+            class="btn btn-primary w-100 rounded-pill fw-bold py-2 mt-2"
             (click)="saveStomatolog()"
           >
             Sačuvaj Stomatologa
@@ -795,13 +933,30 @@
                       <span *ngIf="isProcessing" class="spinner-border spinner-border-sm"></span>
                     </button>
 
-                    <span *ngIf="t.jePlacen" class="badge bg-success rounded-pill px-3 py-2">
+                    <span *ngIf="t.jePlacen" class="badge bg-success rounded-pill px-3 py-2 me-1">
                       <i class="bi bi-check-all me-1"></i> Plaćeno
                     </span>
+                    <button
+                      *ngIf="t.jePlacen"
+                      class="btn btn-sm btn-outline-dark rounded-circle p-2 mx-1 shadow-sm"
+                      (click)="stampajRacun(t)"
+                      title="Štampaj račun / Sačuvaj PDF"
+                    >
+                      <i class="bi bi-printer"></i>
+                    </button>
+
+                    <button
+                      *ngIf="t.status === 'Zavrsen'"
+                      class="btn btn-sm btn-info text-white rounded-circle p-2 mx-1 shadow-sm"
+                      (click)="prikaziIzvestaj(t)"
+                      title="Medicinski izveštaj"
+                    >
+                      <i class="bi bi-file-earmark-medical"></i>
+                    </button>
 
                     <button
                       *ngIf="t.status === 'NaCekanju'"
-                      class="btn btn-sm btn-outline-danger border-0 rounded-circle p-2 hover-bg-danger"
+                      class="btn btn-sm btn-outline-danger border-0 rounded-circle p-2 hover-bg-danger ms-1"
                       (click)="otkaziMojTermin(t.id)"
                       title="Otkaži termin"
                     >
@@ -935,3 +1090,4 @@
     </div>
   </div>
 </div>
+

@@ -13,7 +13,6 @@ import Swal from 'sweetalert2';
   styleUrls: ['./dashboard.scss'],
 })
 export class Dashboard implements OnInit {
-  // --- VIEWCHILD REFERENCE (Da rešimo problem sa nazivima) ---
   @ViewChild('docModal') docModalElement!: ElementRef;
   @ViewChild('pregledModal') pregledModalElement!: ElementRef;
 
@@ -21,7 +20,6 @@ export class Dashboard implements OnInit {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
 
-  // --- PODACI ---
   data: any = null;
   users: any[] = [];
   loading = true;
@@ -47,7 +45,7 @@ export class Dashboard implements OnInit {
 
   // --- ZAKAZIVANJE (PACIJENT) ---
   stomatolozi: any[] = [];
-  listaUsluga: any[] = []; // NOVO: Lista usluga iz baze
+  listaUsluga: any[] = [];
 
   // NOVO: Dodat uslugaId
   noviTermin = { stomatologId: null, uslugaId: null, datumVreme: '', napomena: '' };
@@ -61,7 +59,7 @@ export class Dashboard implements OnInit {
   allAppointments: any[] = []; // Svi termini za admina
   myAppointments: any[] = [];
 
-  listaPotrosnje: any[] = []; // Privremena lista (korpa)
+  listaPotrosnje: any[] = []; // Privremena lista
   izabranMaterijalId: number | null = null;
   kolicinaZaPotrosnju: number = 1;
 
@@ -90,12 +88,11 @@ export class Dashboard implements OnInit {
       } else if (this.data?.uloga === 'Stomatolog') {
         this.loadDoctorData();
       } else if (this.data?.uloga === 'Pacijent') {
-        this.loadMyAppointments(); // <--- DODAJ OVO
+        this.loadMyAppointments();
       }
     }, 300);
   }
 
-  // 3. Dodaj novu funkciju za učitavanje
   loadMyAppointments() {
     this.http.get<any[]>('https://localhost:7075/api/termin/moji-termini').subscribe({
       next: (res) => {
@@ -107,11 +104,36 @@ export class Dashboard implements OnInit {
   }
 
   otkaziMojTermin(id: number) {
-    if (confirm('Da li želite da otkažete ovaj termin?')) {
-      this.http.delete(`https://localhost:7075/api/termin/${id}`).subscribe(() => {
-        this.loadMyAppointments(); // Osveži listu
-      });
-    }
+    Swal.fire({
+      title: 'Otkazivanje termina',
+      text: 'Da li ste sigurni da želite da otkažete ovaj termin?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '<i class="bi bi-trash3 me-1"></i> Da, otkaži',
+      cancelButtonText: 'Odustani',
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.http.delete(`https://localhost:7075/api/termin/moj-termin/${id}`).subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Otkazano!',
+              text: 'Vaš termin je uspešno otkazan.',
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.loadMyAppointments();
+          },
+          error: (err) => {
+            console.error('Greška pri otkazivanju:', err);
+            Swal.fire('Greška!', 'Došlo je do greške prilikom otkazivanja.', 'error');
+          },
+        });
+      }
+    });
   }
 
   // =================================================================
@@ -140,7 +162,6 @@ export class Dashboard implements OnInit {
     });
   }
 
-  // NOVO: Funkcija za učitavanje usluga
   ucitajUsluge() {
     this.http.get<any[]>('https://localhost:7075/api/usluga').subscribe({
       next: (res) => {
@@ -167,7 +188,6 @@ export class Dashboard implements OnInit {
     });
   }
 
-  // POPRAVLJENO: Funkcija koja ti je falila
   loadUsers() {
     this.adminTab = 'users';
     this.http.get<any[]>('https://localhost:7075/api/user').subscribe((res) => {
@@ -194,15 +214,13 @@ export class Dashboard implements OnInit {
       text: 'Ova akcija će trajno obrisati korisnika i sve njegove termine!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33', // Crveno dugme za brisanje
-      cancelButtonColor: '#6c757d', // Sivo za odustajanje
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
       confirmButtonText: '<i class="bi bi-trash3 me-1"></i> Da, obriši!',
       cancelButtonText: 'Odustani',
-      reverseButtons: true, // Stavlja "Odustani" levo, a "Obriši" desno (bolji UX)
+      reverseButtons: true,
     }).then((result) => {
-      // Ako je korisnik kliknuo "Da, obriši!"
       if (result.isConfirmed) {
-        // Opciono: Prikaži loading dok se čeka odgovor sa servera
         Swal.fire({
           title: 'Brisanje u toku...',
           text: 'Molimo sačekajte.',
@@ -211,15 +229,10 @@ export class Dashboard implements OnInit {
             Swal.showLoading();
           },
         });
-
-        // Šaljemo zahtev na backend
         this.http.delete(`https://localhost:7075/api/user/${id}`).subscribe({
           next: () => {
-            // Uklanjamo iz niza na frontendu
             this.users = this.users.filter((u) => u.id !== id);
             this.cdr.detectChanges();
-
-            // Prikazujemo poruku o uspehu
             Swal.fire({
               icon: 'success',
               title: 'Obrisano!',
@@ -279,15 +292,12 @@ export class Dashboard implements OnInit {
   }
 
   odgovoriNaTermin(id: number, status: string) {
-    // 1. Prilagođavamo tekst pitanja zavisno od toga šta radimo (Prihvatamo ili Odbijamo)
     const isPrihvatanje = status === 'Prihvacen';
     const naslov = isPrihvatanje ? 'Potvrda termina' : 'Odbijanje termina';
     const tekst = isPrihvatanje
       ? 'Da li ste sigurni da želite da potvrdite termin? Pacijent će dobiti email obaveštenje.'
       : 'Da li ste sigurni da želite da odbijete termin? Pacijent će biti obavešten emailom.';
-    const bojaDugmeta = isPrihvatanje ? '#198754' : '#d33'; // Zelena ili Crvena
-
-    // 2. Pitamo za potvrdu
+    const bojaDugmeta = isPrihvatanje ? '#198754' : '#d33';
     Swal.fire({
       title: naslov,
       text: tekst,
@@ -299,7 +309,6 @@ export class Dashboard implements OnInit {
       cancelButtonText: 'Odustani',
     }).then((result) => {
       if (result.isConfirmed) {
-        // 3. Prikazujemo LOADING dok backend šalje email
         Swal.fire({
           title: 'Slanje obaveštenja...',
           text: 'Molimo sačekajte dok server šalje email pacijentu.',
@@ -309,14 +318,12 @@ export class Dashboard implements OnInit {
           },
         });
 
-        // 4. Šaljemo zahtev
         this.http
           .put(`https://localhost:7075/api/termin/promeni-status/${id}`, `"${status}"`, {
             headers: { 'Content-Type': 'application/json' },
           })
           .subscribe({
             next: () => {
-              // 5. Uspeh - Zatvaramo loading i prikazujemo uspeh
               Swal.fire({
                 icon: 'success',
                 title: 'Uspešno!',
@@ -328,7 +335,6 @@ export class Dashboard implements OnInit {
               this.ucitajSveTermineZaAdmina();
             },
             error: (err) => {
-              // 6. Greška
               console.error(err);
               Swal.fire({
                 icon: 'error',
@@ -346,14 +352,12 @@ export class Dashboard implements OnInit {
   // =================================================================
 
   openDocModal() {
-    // Koristimo tačan naziv ViewChild-a: docModalElement
     const el = this.docModalElement.nativeElement;
     const modal = bootstrap.Modal.getOrCreateInstance(el);
     modal.show();
   }
 
   saveStomatolog() {
-    // 1. VALIDACIJA: Provera da li su sva polja popunjena
     if (
       !this.noviDoc.ime ||
       !this.noviDoc.prezime ||
@@ -370,8 +374,6 @@ export class Dashboard implements OnInit {
     }
 
     this.isSaving = true;
-
-    // 2. Prikaz loading-a
     Swal.fire({
       title: 'Kreiranje naloga...',
       text: 'Molimo sačekajte.',
@@ -385,7 +387,6 @@ export class Dashboard implements OnInit {
       next: () => {
         this.isSaving = false;
 
-        // Resetovanje forme
         this.noviDoc = { ime: '', prezime: '', email: '', lozinka: '' };
 
         // Zatvaranje Bootstrap modala
@@ -396,8 +397,6 @@ export class Dashboard implements OnInit {
 
         // Osvežavanje liste korisnika ako smo na tom tabu
         if (this.adminTab === 'users') this.loadUsers();
-
-        // 3. USPEH
         Swal.fire({
           icon: 'success',
           title: 'Uspešno!',
@@ -408,8 +407,6 @@ export class Dashboard implements OnInit {
       },
       error: (err) => {
         this.isSaving = false;
-
-        // 4. GREŠKA
         console.error(err);
         Swal.fire({
           icon: 'error',
@@ -478,7 +475,7 @@ export class Dashboard implements OnInit {
         icon: 'error',
         title: 'Nedovoljno na stanju!',
         text: `Na stanju ima samo ${materijal.kolicina} kom. materijala "${materijal.naziv}". Vi pokušavate da skinete ukupno ${ukupnoZaPotrosnju}.`,
-        confirmButtonColor: '#d33'
+        confirmButtonColor: '#d33',
       });
       return; // PREKID! Blokiramo ga i ne idemo dalje.
     }
@@ -514,20 +511,17 @@ export class Dashboard implements OnInit {
       });
       return;
     }
-
-    // 2. Potvrda akcije (Confirmation Dialog)
     Swal.fire({
       title: 'Završetak pregleda',
       text: 'Da li ste sigurni da želite da sačuvate nalaz i razdužite utrošeni materijal?',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#198754', // Zelena za potvrdu
-      cancelButtonColor: '#6c757d', // Siva za odustajanje
+      confirmButtonColor: '#198754',
+      cancelButtonColor: '#6c757d',
       confirmButtonText: '<i class="bi bi-save me-1"></i> Da, završi',
       cancelButtonText: 'Odustani',
     }).then((result) => {
       if (result.isConfirmed) {
-        // 3. Prikazujemo Loading
         Swal.fire({
           title: 'Čuvanje podataka...',
           text: 'Ažuriranje zdravstvenog kartona i magacina.',
@@ -550,7 +544,6 @@ export class Dashboard implements OnInit {
           )
           .subscribe({
             next: () => {
-              // 4. Uspeh
               Swal.fire({
                 icon: 'success',
                 title: 'Pregled završen!',
@@ -558,20 +551,15 @@ export class Dashboard implements OnInit {
                 timer: 2000,
                 showConfirmButton: false,
               });
-
-              // Osvežavanje podataka
               this.loadDoctorData();
-              this.loadInventar(); // Veoma bitno da se vidi novo stanje u magacinu
+              this.loadInventar();
 
               // Zatvaranje Bootstrap modala
               if (this.modalInstance) this.modalInstance.hide();
-
-              // Opciono: Očistiti formu
               this.pregledData = { dijagnoza: '', terapija: '' };
               this.listaPotrosnje = [];
             },
             error: (err) => {
-              // 5. Greška
               console.error(err);
               Swal.fire({
                 icon: 'error',
@@ -590,37 +578,38 @@ export class Dashboard implements OnInit {
   // =================================================================
 
   pripremiDatumVreme() {
-    console.log('Priprema datuma:', this.izabranDatum, this.izabranoVreme); // DEBUG
-
     if (this.izabranDatum && this.izabranoVreme) {
-      // Pravimo format: "2024-02-15T14:30:00"
       this.noviTermin.datumVreme = `${this.izabranDatum}T${this.izabranoVreme}:00`;
-      console.log('Generisan datumVreme:', this.noviTermin.datumVreme); // DEBUG
     } else {
       this.noviTermin.datumVreme = '';
     }
   }
 
   ucitajSlobodneTermine() {
-    // 1. Ručno generišemo fiksnu listu termina (uvek su vidljivi)
     this.slobodniTermini = [
-      "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-      "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
-      "15:00", "15:30", "16:00", "16:30", "17:00"
+      '09:00',
+      '09:30',
+      '10:00',
+      '10:30',
+      '11:00',
+      '11:30',
+      '12:00',
+      '12:30',
+      '13:00',
+      '13:30',
+      '14:00',
+      '14:30',
+      '15:00',
+      '15:30',
+      '16:00',
+      '16:30',
+      '17:00',
     ];
-
-    // 2. Samo poništavamo izabrani "kružić" vremena da pacijent mora 
-    // ponovo da klikne na vreme ako promeni doktora ili datum
     this.izabranoVreme = '';
   }
 
   zakazi() {
     this.pripremiDatumVreme();
-
-    // 2. DEBUG: Ispiši u konzolu šta tačno šaljemo
-    console.log('Šaljem objekat:', this.noviTermin);
-
-    // 3. VALIDACIJA
     if (!this.noviTermin.stomatologId) {
       Swal.fire('Greška', 'Niste izabrali stomatologa!', 'warning');
       return;
@@ -633,9 +622,7 @@ export class Dashboard implements OnInit {
       Swal.fire('Greška', 'Niste izabrali datum i vreme!', 'warning');
       return;
     }
-
-    // 4. SLANJE NA BACKEND
-    this.isProcessing = true; // Blokiraj dugme da ne klikne dvaput
+    this.isProcessing = true; // Blokiranje dugmeta da ne klikne dvaput
 
     this.http.post('https://localhost:7075/api/termin/zakazi', this.noviTermin).subscribe({
       next: (res: any) => {
@@ -649,16 +636,14 @@ export class Dashboard implements OnInit {
           timer: 3000,
           showConfirmButton: false,
         });
-
-        // 5. OSVEŽAVANJE PODATAKA
-        this.loadMyAppointments(); // Osveži moju tabelu
-        this.ucitajSlobodneTermine(); // Osveži listu termina (da skloniš zauzeti)
+        this.loadMyAppointments();
+        this.ucitajSlobodneTermine();
 
         // 6. RESET FORME
         this.izabranoVreme = '';
         this.noviTermin = {
-          stomatologId: this.noviTermin.stomatologId, // Ostavljamo doktora
-          uslugaId: this.noviTermin.uslugaId, // Ostavljamo uslugu
+          stomatologId: this.noviTermin.stomatologId,
+          uslugaId: this.noviTermin.uslugaId,
           datumVreme: '',
           napomena: '',
         };
@@ -666,15 +651,11 @@ export class Dashboard implements OnInit {
       error: (err) => {
         console.error('Greška pri zakazivanju:', err);
         this.isProcessing = false;
-
-        // Prikaz greške sa servera
         Swal.fire({
           icon: 'error',
           title: 'Greška',
           text: err.error || 'Došlo je do greške na serveru.',
         });
-
-        // Ako je greška "Termin zauzet", osveži listu
         if (err.status === 400) {
           this.ucitajSlobodneTermine();
           this.izabranoVreme = '';
@@ -702,7 +683,6 @@ export class Dashboard implements OnInit {
   }
 
   saveNoviMaterijal() {
-    // 1. VALIDACIJA: Provera da li je unet naziv
     if (!this.noviMaterijal.naziv || this.noviMaterijal.naziv.trim() === '') {
       Swal.fire({
         icon: 'warning',
@@ -712,8 +692,6 @@ export class Dashboard implements OnInit {
       });
       return;
     }
-
-    // 2. Prikaz loading-a dok se čuva
     Swal.fire({
       title: 'Dodavanje u inventar...',
       allowOutsideClick: false,
@@ -724,14 +702,9 @@ export class Dashboard implements OnInit {
 
     this.http.post('https://localhost:7075/api/inventar/dodaj', this.noviMaterijal).subscribe({
       next: (res: any) => {
-        // Ažuriranje liste na ekranu
         this.inventar.push(res);
-
-        // Resetovanje forme
         this.noviMaterijal = { naziv: '', kolicina: 0, opis: '' };
         this.cdr.detectChanges();
-
-        // 3. USPEH (Timer od 1.5 sekundi, da ne mora da klikće OK)
         Swal.fire({
           icon: 'success',
           title: 'Uspešno dodato!',
@@ -741,7 +714,6 @@ export class Dashboard implements OnInit {
         });
       },
       error: (err) => {
-        // 4. GREŠKA
         console.error(err);
         Swal.fire({
           icon: 'error',
@@ -753,7 +725,6 @@ export class Dashboard implements OnInit {
     });
   }
 
-  // --- Helpers ---
   generisiTermine() {
     const termini = [];
     for (let sat = 9; sat <= 16; sat++) {
@@ -764,12 +735,27 @@ export class Dashboard implements OnInit {
   }
 
   postaviGraniceDatuma() {
-    const sad = new Date();
-    sad.setDate(sad.getDate() + 1);
-    const zaSedamDana = new Date();
-    zaSedamDana.setDate(sad.getDate() + 7);
-    this.minDatum = sad.toISOString().split('.')[0].slice(0, 16);
-    this.maxDatum = zaSedamDana.toISOString().split('.')[0].slice(0, 16);
+    // 1. Računamo SUTRAŠNJI datum (za minDatum)
+    const sutra = new Date();
+    sutra.setDate(sutra.getDate() + 1);
+
+    // Ručno sklapamo YYYY-MM-DD (padStart dodaje nulu ako je jednocifren broj, npr. '05')
+    const minGodina = sutra.getFullYear();
+    const minMesec = String(sutra.getMonth() + 1).padStart(2, '0');
+    const minDan = String(sutra.getDate()).padStart(2, '0');
+    this.minDatum = `${minGodina}-${minMesec}-${minDan}`;
+
+    // 2. Računamo datum za MESEC DANA unapred (za maxDatum)
+    const maxDan = new Date(sutra);
+    maxDan.setDate(sutra.getDate() + 7); // Možeš staviti 7 za nedelju dana
+
+    const maxGodina = maxDan.getFullYear();
+    const maxMesec = String(maxDan.getMonth() + 1).padStart(2, '0');
+    const maxDanStr = String(maxDan.getDate()).padStart(2, '0');
+    this.maxDatum = `${maxGodina}-${maxMesec}-${maxDanStr}`;
+
+    // Ispis u konzoli da proverimo da li je format savršen (npr. "2026-03-01")
+    console.log('Dozvoljeno od:', this.minDatum, 'do:', this.maxDatum);
   }
 
   formatirajDatumZaInput(date: Date): string {
@@ -787,7 +773,7 @@ export class Dashboard implements OnInit {
     );
   }
 
-  // Filteri za pretragu
+  // Filter za pretragu
   get filteredAppointments() {
     if (!this.allAppointments || this.allAppointments.length === 0) return [];
     if (!this.appointmentSearch) return this.allAppointments;
@@ -804,19 +790,15 @@ export class Dashboard implements OnInit {
     return this.filteredAppointments.slice(startIndex, startIndex + this.appointmentsPerPage);
   }
 
-  // 3. UKUPNO STRANICA ZA TERMINE (NOVO)
+  //za stranice od 1 pa na vise
   get totalAppPages() {
     return Math.ceil(this.filteredAppointments.length / this.appointmentsPerPage);
   }
-
-  // 4. NIZ ZA DUGMIĆE (NOVO)
   get appPagesArray() {
     return Array(this.totalAppPages)
       .fill(0)
       .map((x, i) => i + 1);
   }
-
-  // 5. PROMENA STRANICE (NOVO)
   changeAppPage(page: number) {
     if (page >= 1 && page <= this.totalAppPages) {
       this.appointmentsPage = page;
@@ -839,20 +821,14 @@ export class Dashboard implements OnInit {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.filteredUsers.slice(startIndex, startIndex + this.itemsPerPage);
   }
-
-  // 3. NOVO: UKUPAN BROJ STRANICA
   get totalPages() {
     return Math.ceil(this.filteredUsers.length / this.itemsPerPage);
   }
-
-  // 4. NOVO: NIZ ZA DUGMIĆE [1, 2, 3...]
   get pagesArray() {
     return Array(this.totalPages)
       .fill(0)
       .map((x, i) => i + 1);
   }
-
-  // 5. NOVO: PROMENA STRANICE
   changePage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
@@ -873,13 +849,12 @@ export class Dashboard implements OnInit {
   }
 
   platiRacun(terminId: number, iznos: number) {
-    // 1. KONFIRMACIJA - Lep prikaz iznosa
     Swal.fire({
       title: 'Plaćanje računa',
       html: `Iznos za uplatu: <b>${iznos} RSD</b>.<br>Da li želite da izvršite transakciju?`,
       icon: 'info',
       showCancelButton: true,
-      confirmButtonColor: '#198754', // Zelena (boja novca)
+      confirmButtonColor: '#198754',
       cancelButtonColor: '#6c757d',
       confirmButtonText: '<i class="bi bi-credit-card-2-front"></i> Plati karticom',
       cancelButtonText: 'Odustani',
@@ -887,9 +862,6 @@ export class Dashboard implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isProcessing = true;
-
-        // 2. PROCESIRANJE (Simulacija banke)
-        // Prikazujemo ovaj prozor dok teče onih tvojih 3 sekunde
         Swal.fire({
           title: 'Procesiranje uplate...',
           html: 'Povezivanje sa procesorom kartica.<br><b>Molimo ne zatvarajte prozor.</b>',
@@ -903,13 +875,11 @@ export class Dashboard implements OnInit {
           this.http.post(`https://localhost:7075/api/racun/plati/${terminId}`, {}).subscribe({
             next: () => {
               this.isProcessing = false;
-
-              // 3. USPEH
               Swal.fire({
                 icon: 'success',
                 title: 'Transakcija uspešna!',
                 text: 'Vaša uplata je proknjižena i račun je izmiren.',
-                timer: 3000, // Malo duže da stignu da pročitaju
+                timer: 3000,
                 showConfirmButton: false,
               });
 
@@ -917,8 +887,6 @@ export class Dashboard implements OnInit {
             },
             error: (err) => {
               this.isProcessing = false;
-
-              // 4. GREŠKA
               console.error(err);
               Swal.fire({
                 icon: 'error',
@@ -930,10 +898,9 @@ export class Dashboard implements OnInit {
               });
             },
           });
-        }, 3000); // Tvojih 3 sekunde čekanja
+        }, 3000);
       }
     });
-    
   }
   getKriticniInventarCount(): number {
     if (!this.data || !this.data.inventar) return 0;
@@ -941,26 +908,24 @@ export class Dashboard implements OnInit {
   }
 
   getTerminiNaCekanjuCount(): number {
-    // Pretpostavljam da imaš niz svih termina. Zameni 'this.filteredAppointments' sa imenom tvog glavnog niza za termine ako se zove drugačije.
     if (!this.filteredAppointments) return 0;
-    return this.filteredAppointments.filter(t => t.status === 'NaCekanju').length;
+    return this.filteredAppointments.filter((t) => t.status === 'NaCekanju').length;
   }
-
   getOdbijeniTerminiCount(): number {
     if (!this.filteredAppointments) return 0;
-    return this.filteredAppointments.filter(t => t.status === 'Odbijen' || t.status === 'Otkazan').length;
+    return this.filteredAppointments.filter((t) => t.status === 'Odbijen' || t.status === 'Otkazan')
+      .length;
   }
 
   getProcenatUspesnih(): number {
     if (!this.filteredAppointments || this.filteredAppointments.length === 0) return 0;
-    const uspesni = this.filteredAppointments.filter(t => t.status === 'Prihvacen' || t.status === 'Zavrsen').length;
-    // Računamo procenat i zaokružujemo na ceo broj
+    const uspesni = this.filteredAppointments.filter(
+      (t) => t.status === 'Prihvacen' || t.status === 'Zavrsen',
+    ).length;
     return Math.round((uspesni / this.filteredAppointments.length) * 100);
   }
-  // --- PRIKAZ MEDICINSKOG IZVEŠTAJA ---
   prikaziIzvestaj(termin: any) {
     console.log('Ovo mi je stiglo sa servera za ovaj termin:', termin);
-    // Koristimo SweetAlert za elegantan prikaz "Kartona"
     Swal.fire({
       title: 'Medicinski izveštaj',
       html: `
@@ -981,13 +946,11 @@ export class Dashboard implements OnInit {
       `,
       icon: 'info',
       confirmButtonText: 'Zatvori',
-      confirmButtonColor: '#0d6efd'
+      confirmButtonColor: '#0d6efd',
     });
   }
 
-  // --- GENERISANJE RAČUNA I PDF-a ---
   stampajRacun(termin: any) {
-    // 1. Priprema HTML šablona za račun
     const racunHtml = `
       <html>
         <head>
@@ -1053,18 +1016,15 @@ export class Dashboard implements OnInit {
       </html>
     `;
 
-    // 2. Trik: Otvaramo novi skriveni prozor, ubacujemo HTML i zovemo Print
     const printWindow = window.open('', '', 'height=600,width=800');
     if (printWindow) {
       printWindow.document.write(racunHtml);
       printWindow.document.close();
       printWindow.focus();
-      
-      // Pokreće prozor za štampanje (gde korisnik može da bira 'Save as PDF')
       setTimeout(() => {
         printWindow.print();
         printWindow.close();
-      }, 250); // Čekamo delić sekunde da se HTML lepo učita
+      }, 250); 
     } else {
       Swal.fire('Greška', 'Vaš browser je blokirao iskačući prozor za štampu.', 'error');
     }

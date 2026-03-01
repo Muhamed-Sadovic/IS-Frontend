@@ -18,8 +18,6 @@ export class Header implements AfterViewInit {
   isLoggedIn() {
     return this.authService.isLoggedIn();
   }
-
-  // Ovo "budno" prati Bootstrap elemente nakon što se učitaju
   ngAfterViewInit() {
     const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
     dropdownElementList.forEach(dropdownToggleEl => {
@@ -29,7 +27,6 @@ export class Header implements AfterViewInit {
 
   logout() {
     this.authService.logout();
-    // Bolje je koristiti router umesto window.location da se aplikacija ne bi resetovala skroz
     this.router.navigate(['/login']);
   }
 }

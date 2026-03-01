@@ -159,18 +159,14 @@
 .italic {
   font-style: italic;
 }
-/* --- Novi Minimalistički Cenovnik --- */
 
-/* Naslov u tabeli (Intervencija, Kategorija...) */
 .custom-table thead th {
-  background-color: #f8f9fa; /* Veoma svetlo siva, skoro bela */
+  background-color: #f8f9fa;
   border-bottom: 2px solid #e9ecef;
   font-size: 0.75rem;
 }
-
-/* Redovi */
 .cenovnik-row td {
-  border-bottom: 1px solid #f0f2f5; /* Veoma tanka linija između redova */
+  border-bottom: 1px solid #f0f2f5;
   transition: all 0.2s ease;
   padding-top: 1rem;
   padding-bottom: 1rem;

@@ -39,9 +39,6 @@ export class Register implements OnInit {
     if (savedEmail) {
       this.noviKorisnik.email = savedEmail;
       this.prikaziVerifikaciju = true;
-
-      // Opciono: Obavesti korisnika
-      // Swal.fire('Nastavak registracije', 'Vratili smo vas na unos koda.', 'info');
     }
   }
 
@@ -173,8 +170,6 @@ export class Register implements OnInit {
   }
   nazadNaIzmenu() {
     this.prikaziVerifikaciju = false;
-    // Brišemo iz memorije jer korisnik svesno hoće da menja podatke
-    // (Ili ne brišemo, zavisi šta želiš, ali bolje da ostane u formi)
-    // localStorage.removeItem('pendingRegistrationEmail');
+    // Brišemo iz memorije jer korisnik svesno hoce da menja podatke
   }
 }

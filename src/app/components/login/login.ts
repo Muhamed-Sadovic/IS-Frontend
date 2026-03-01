@@ -56,7 +56,6 @@ export class Login {
           title: 'Neuspešna prijava',
           text: 'Neispravan email ili lozinka.',
           confirmButtonColor: '#d33',
-          footer: '<a href="/forgot-password">Zaboravili ste lozinku?</a>'
         });
       },
     });

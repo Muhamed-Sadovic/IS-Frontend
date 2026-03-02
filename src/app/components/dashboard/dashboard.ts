@@ -94,7 +94,7 @@ export class Dashboard implements OnInit {
   }
 
   loadMyAppointments() {
-    this.http.get<any[]>('https://localhost:7075/api/termin/moji-termini').subscribe({
+    this.http.get<any[]>('/api/termin/moji-termini').subscribe({
       next: (res) => {
         this.myAppointments = res;
         this.cdr.detectChanges();
@@ -116,7 +116,7 @@ export class Dashboard implements OnInit {
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`https://localhost:7075/api/termin/moj-termin/${id}`).subscribe({
+        this.http.delete(`/api/termin/moj-termin/${id}`).subscribe({
           next: () => {
             Swal.fire({
               title: 'Otkazano!',
@@ -142,7 +142,7 @@ export class Dashboard implements OnInit {
 
   loadDashboardData() {
     this.loading = true;
-    this.http.get('https://localhost:7075/api/dashboard').subscribe({
+    this.http.get('/api/dashboard').subscribe({
       next: (res) => {
         this.data = res;
         this.loading = false;
@@ -153,7 +153,7 @@ export class Dashboard implements OnInit {
   }
 
   ucitajStomatologe() {
-    this.http.get<any[]>('https://localhost:7075/api/user/stomatolozi').subscribe({
+    this.http.get<any[]>('/api/user/stomatolozi').subscribe({
       next: (res) => {
         this.stomatolozi = res;
         this.cdr.detectChanges();
@@ -163,7 +163,7 @@ export class Dashboard implements OnInit {
   }
 
   ucitajUsluge() {
-    this.http.get<any[]>('https://localhost:7075/api/usluga').subscribe({
+    this.http.get<any[]>('/api/usluga').subscribe({
       next: (res) => {
         this.listaUsluga = res;
         this.cdr.detectChanges();
@@ -172,7 +172,7 @@ export class Dashboard implements OnInit {
   }
 
   ucitajSveTermineZaAdmina() {
-    this.http.get<any[]>('https://localhost:7075/api/termin/pregled-svih').subscribe({
+    this.http.get<any[]>('/api/termin/pregled-svih').subscribe({
       next: (res) => {
         this.allAppointments = res;
         this.cdr.detectChanges();
@@ -182,7 +182,7 @@ export class Dashboard implements OnInit {
   }
 
   loadDoctorData() {
-    this.http.get<any[]>('https://localhost:7075/api/termin/danasnji-termini').subscribe((res) => {
+    this.http.get<any[]>('/api/termin/danasnji-termini').subscribe((res) => {
       this.doctorAppointments = res;
       this.cdr.detectChanges();
     });
@@ -190,7 +190,7 @@ export class Dashboard implements OnInit {
 
   loadUsers() {
     this.adminTab = 'users';
-    this.http.get<any[]>('https://localhost:7075/api/user').subscribe((res) => {
+    this.http.get<any[]>('/api/user').subscribe((res) => {
       this.users = res;
       this.cdr.detectChanges();
     });
@@ -198,7 +198,7 @@ export class Dashboard implements OnInit {
 
   loadInventar() {
     this.adminTab = 'inventar';
-    this.http.get<any[]>('https://localhost:7075/api/inventar').subscribe((res) => {
+    this.http.get<any[]>('/api/inventar').subscribe((res) => {
       this.inventar = res;
       this.cdr.detectChanges();
     });
@@ -229,7 +229,7 @@ export class Dashboard implements OnInit {
             Swal.showLoading();
           },
         });
-        this.http.delete(`https://localhost:7075/api/user/${id}`).subscribe({
+        this.http.delete(`/api/user/${id}`).subscribe({
           next: () => {
             this.users = this.users.filter((u) => u.id !== id);
             this.cdr.detectChanges();
@@ -267,7 +267,7 @@ export class Dashboard implements OnInit {
       cancelButtonText: 'Odustani',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.http.delete(`https://localhost:7075/api/termin/${id}`).subscribe({
+        this.http.delete(`/api/termin/${id}`).subscribe({
           next: () => {
             this.allAppointments = this.allAppointments.filter((t: any) => t.id !== id);
             this.cdr.detectChanges();
@@ -319,7 +319,7 @@ export class Dashboard implements OnInit {
         });
 
         this.http
-          .put(`https://localhost:7075/api/termin/promeni-status/${id}`, `"${status}"`, {
+          .put(`/api/termin/promeni-status/${id}`, `"${status}"`, {
             headers: { 'Content-Type': 'application/json' },
           })
           .subscribe({
@@ -383,7 +383,7 @@ export class Dashboard implements OnInit {
       },
     });
 
-    this.http.post('https://localhost:7075/api/user/dodaj-stomatologa', this.noviDoc).subscribe({
+    this.http.post('/api/user/dodaj-stomatologa', this.noviDoc).subscribe({
       next: () => {
         this.isSaving = false;
 
@@ -537,38 +537,33 @@ export class Dashboard implements OnInit {
           PotroseniMaterijal: this.listaPotrosnje,
         };
 
-        this.http
-          .put(
-            `https://localhost:7075/api/stomatolog/zavrsi-pregled/${this.selectedTermin.id}`,
-            body,
-          )
-          .subscribe({
-            next: () => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Pregled završen!',
-                text: 'Podaci su sačuvani, a materijal je uspešno razdužen.',
-                timer: 2000,
-                showConfirmButton: false,
-              });
-              this.loadDoctorData();
-              this.loadInventar();
+        this.http.put(`/api/stomatolog/zavrsi-pregled/${this.selectedTermin.id}`, body).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Pregled završen!',
+              text: 'Podaci su sačuvani, a materijal je uspešno razdužen.',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            this.loadDoctorData();
+            this.loadInventar();
 
-              // Zatvaranje Bootstrap modala
-              if (this.modalInstance) this.modalInstance.hide();
-              this.pregledData = { dijagnoza: '', terapija: '' };
-              this.listaPotrosnje = [];
-            },
-            error: (err) => {
-              console.error(err);
-              Swal.fire({
-                icon: 'error',
-                title: 'Greška',
-                text: err.error?.message || 'Došlo je do greške prilikom čuvanja pregleda.',
-                confirmButtonColor: '#d33',
-              });
-            },
-          });
+            // Zatvaranje Bootstrap modala
+            if (this.modalInstance) this.modalInstance.hide();
+            this.pregledData = { dijagnoza: '', terapija: '' };
+            this.listaPotrosnje = [];
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Greška',
+              text: err.error?.message || 'Došlo je do greške prilikom čuvanja pregleda.',
+              confirmButtonColor: '#d33',
+            });
+          },
+        });
       }
     });
   }
@@ -624,7 +619,7 @@ export class Dashboard implements OnInit {
     }
     this.isProcessing = true; // Blokiranje dugmeta da ne klikne dvaput
 
-    this.http.post('https://localhost:7075/api/termin/zakazi', this.noviTermin).subscribe({
+    this.http.post('/api/termin/zakazi', this.noviTermin).subscribe({
       next: (res: any) => {
         console.log('Uspešno zakazano:', res);
         this.isProcessing = false;
@@ -675,7 +670,7 @@ export class Dashboard implements OnInit {
     if (nova < 0) return;
 
     this.http
-      .put(`https://localhost:7075/api/inventar/azuriraj-kolicinu/${id}?novaKolicina=${nova}`, {})
+      .put(`/api/inventar/azuriraj-kolicinu/${id}?novaKolicina=${nova}`, {})
       .subscribe(() => {
         stavka.kolicina = nova;
         this.cdr.detectChanges();
@@ -700,7 +695,7 @@ export class Dashboard implements OnInit {
       },
     });
 
-    this.http.post('https://localhost:7075/api/inventar/dodaj', this.noviMaterijal).subscribe({
+    this.http.post('/api/inventar/dodaj', this.noviMaterijal).subscribe({
       next: (res: any) => {
         this.inventar.push(res);
         this.noviMaterijal = { naziv: '', kolicina: 0, opis: '' };
@@ -872,7 +867,7 @@ export class Dashboard implements OnInit {
         });
 
         setTimeout(() => {
-          this.http.post(`https://localhost:7075/api/racun/plati/${terminId}`, {}).subscribe({
+          this.http.post(`/api/racun/plati/${terminId}`, {}).subscribe({
             next: () => {
               this.isProcessing = false;
               Swal.fire({
@@ -951,10 +946,33 @@ export class Dashboard implements OnInit {
   }
 
   stampajRacun(termin: any) {
+    const racun = termin.racun;
+    
+    // KLJUČNA PROMENA: Sada proveravamo i tvoju 'jePlacen' varijablu koja se pali na klik dugmeta Plati!
+    const jePlacen = (racun && (racun.statusPlacanja === 0 || racun.statusPlacanja === 'Placeno')) || termin.jePlacen === true; 
+    
+    const statusTekst = jePlacen ? 'PLAĆENO' : 'NEPLAĆENO (PREDRAČUN)';
+    const statusBoja = jePlacen ? 'green' : 'red';
+    const nazivDokumenta = jePlacen ? 'Račun' : 'Predračun';
+    
+    const iznosZaNaplatu = racun ? racun.iznos : (termin.cena || 0);
+
+    let datumUplateHtml = '';
+    if (jePlacen) {
+        // Ako tek platiš, racun.datumIzdavanja možda još nije ažuriran u memoriji, pa uzimamo današnji datum
+        const datumIzdavanja = (racun && racun.datumIzdavanja) ? new Date(racun.datumIzdavanja).toLocaleDateString('sr-RS') : new Date().toLocaleDateString('sr-RS');
+        const nacinPlacanjaTekst = (racun && racun.nacinPlacanja === 1) ? 'Kartica' : 'Gotovina';
+        
+        datumUplateHtml = `
+            <strong>Datum uplate:</strong> ${datumIzdavanja}<br>
+            <strong>Način plaćanja:</strong> ${nacinPlacanjaTekst}<br>
+        `;
+    }
+
     const racunHtml = `
       <html>
         <head>
-          <title>Račun - ${termin.id}</title>
+          <title>${nazivDokumenta} - ${termin.id}</title>
           <style>
             body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #333; }
             .header { text-align: center; border-bottom: 2px solid #ddd; padding-bottom: 20px; margin-bottom: 30px; }
@@ -975,13 +993,13 @@ export class Dashboard implements OnInit {
           
           <div class="info">
             <div>
-              <strong>Pacijent:</strong> ${termin.pacijentIme}<br>
-              <strong>Email:</strong> ${termin.pacijentEmail}
+              <strong>Pacijent:</strong> ${termin.pacijentIme || 'Nepoznat pacijent'}<br>
+              <strong>Email:</strong> ${termin.pacijentEmail || '/'}
             </div>
             <div style="text-align: right;">
-              <strong>Broj računa:</strong> #RC-${termin.id}-${new Date().getFullYear()}<br>
-              <strong>Datum uplate:</strong> ${new Date().toLocaleDateString('sr-RS')}<br>
-              <strong>Status:</strong> <span style="color: green;">PLAĆENO</span>
+              <strong>Broj dokumenta:</strong> #RC-${racun ? racun.id : termin.id}-${new Date().getFullYear()}<br>
+              ${datumUplateHtml}
+              <strong>Status:</strong> <span style="color: ${statusBoja}; font-weight: bold;">${statusTekst}</span>
             </div>
           </div>
 
@@ -996,21 +1014,21 @@ export class Dashboard implements OnInit {
             </thead>
             <tbody>
               <tr>
-                <td>${termin.tretman}</td>
-                <td>Dr ${termin.stomatologIme}</td>
+                <td>${termin.tretman || 'Stomatološka usluga'}</td>
+                <td>Dr ${termin.stomatologIme || '/'}</td>
                 <td>${new Date(termin.datumVreme).toLocaleDateString('sr-RS')}</td>
-                <td style="text-align: right;">${termin.cena} RSD</td>
+                <td style="text-align: right;">${iznosZaNaplatu} RSD</td>
               </tr>
             </tbody>
           </table>
 
           <div class="total">
-            Ukupno za uplatu: ${termin.cena} RSD
+            Ukupno za uplatu: ${iznosZaNaplatu} RSD
           </div>
 
           <div class="footer">
             Hvala Vam na poverenju!<br>
-            Ovaj račun je elektronski generisan i važeći je bez pečata i potpisa.
+            Ovaj <strong>${nazivDokumenta.toLowerCase()}</strong> je elektronski generisan.
           </div>
         </body>
       </html>
@@ -1024,9 +1042,9 @@ export class Dashboard implements OnInit {
       setTimeout(() => {
         printWindow.print();
         printWindow.close();
-      }, 250); 
+      }, 250);
     } else {
       Swal.fire('Greška', 'Vaš browser je blokirao iskačući prozor za štampu.', 'error');
     }
-  }
+}
 }

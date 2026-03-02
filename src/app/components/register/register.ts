@@ -31,7 +31,7 @@ export class Register implements OnInit {
     private authService: AuthService,
     private router: Router,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
   ngOnInit() {
     const savedEmail = localStorage.getItem('pendingRegistrationEmail');
@@ -141,7 +141,7 @@ export class Register implements OnInit {
 
     const podaci = { Email: this.noviKorisnik.email, Kod: kod };
 
-    this.http.post('https://localhost:7075/api/account/verify', podaci).subscribe({
+    this.http.post('/api/account/verify', podaci).subscribe({
       next: () => {
         Swal.fire({
           icon: 'success',

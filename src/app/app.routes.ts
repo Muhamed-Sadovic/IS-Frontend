@@ -9,6 +9,7 @@ import { ErrorPage } from './components/error-page/error-page';
 import { AuthGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: Home },
   { path: 'login', component: Login },
   { path: 'register', component: Register },

@@ -19,12 +19,12 @@ export class Home {
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    private scroller: ViewportScroller
+    private scroller: ViewportScroller,
   ) {}
 
   ngOnInit(): void {
     this.ucitajUloguIzTokena();
-    this.http.get<any[]>('https://localhost:7075/api/usluga').subscribe({
+    this.http.get<any[]>('/api/usluga').subscribe({
       next: (res) => {
         this.usluge = res;
         this.cdr.detectChanges();
